@@ -1,0 +1,23 @@
+<?xml version="1.0"?>
+<!--
+Copyright (c) 2014 Daniel Lo Nigro (Daniel15)
+
+This source code is licensed under the BSD-style license found in the 
+LICENSE file in the root directory of this source tree. 
+-->
+<package>
+	<metadata>
+		<id>$id$</id>
+		<version>$version$</version>
+		<title>$title$</title>
+		<authors>Daniel Lo Nigro</authors>
+		<owners>Daniel Lo Nigro</owners>
+		<licenseUrl>https://github.com/Daniel15/JSPool/blob/master/LICENSE</licenseUrl>
+		<projectUrl>http://dan.cx/projects/jspool</projectUrl>
+		<requireLicenseAcceptance>false</requireLicenseAcceptance>
+		<summary>Pooling of JavaScript engines in .NET</summary>
+		<description>$description$</description>
+		<copyright>Copyright 2014 Daniel15</copyright>
+		<tags>javascript js javascriptengineswitcher msiejavascriptengine v8 clearscript</tags>
+	</metadata>
+</package>

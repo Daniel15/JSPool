@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright (c) 2014 Daniel Lo Nigro (Daniel15)
+
+This source code is licensed under the BSD-style license found in the 
+LICENSE file in the root directory of this source tree. 
+-->
+<Project ToolsVersion="4.0" DefaultTargets="Build;Test;Package" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+	<PropertyGroup>
+		<Major>0</Major>
+		<Minor>0</Minor>
+		<Build>0</Build>
+		<Revision>0</Revision>
+		<MSBuildCommunityTasksPath>$(MSBuildProjectDirectory)\src\packages\MSBuildTasks.1.4.0.78\tools\</MSBuildCommunityTasksPath>
+		<NuGetApp>&quot;$(MSBuildProjectDirectory)\src\packages\NuGet.CommandLine.2.8.3\tools\NuGet.exe&quot;</NuGetApp>
+		<SolutionFile>src\JSPool.sln</SolutionFile>
+		<PackageOutputDir>output</PackageOutputDir>
+	</PropertyGroup>
+	<ItemGroup>
+		<PackageAssemblies Include="JSPool" />
+	</ItemGroup>
+
+	<Import Project="$(MSBuildCommunityTasksPath)\MSBuild.Community.Tasks.Targets" />
+	
+	<Target Name="RestorePackages">
+		<Exec
+			WorkingDirectory="$(MSBuildProjectDirectory)"
+			Command="$(NuGetApp) restore $(SolutionFile)"
+		/>
+	</Target>
+
+	<Target Name="UpdateVersion">
+		<GitVersion LocalPath="$(MSBuildProjectDirectory)">
+			<Output TaskParameter="CommitHash" PropertyName="Revision" />
+		</GitVersion>
+		<Time Format="yyyyMMdd-HHmm">
+			<Output TaskParameter="FormattedTime" PropertyName="Date" />
+		</Time>
+		<!-- Prepend date to build version if a dev build-->
+		<PropertyGroup Condition="$(BuildType) != 'Release'">
+			<Build>$(Build)-dev-$(Date)</Build>
+		</PropertyGroup>
+		<AssemblyInfo
+			CodeLanguage="CS"
+			OutputFile="src\SharedAssemblyVersionInfo.cs"
+			AssemblyVersion="$(Major).$(Minor)"
+			AssemblyFileVersion="$(Major).$(Minor).$(Build).$(Revision)"
+			AssemblyInformationalVersion="$(Major).$(Minor).$(Build)"
+		/>
+	</Target>
+
+	<Target Name="Build" DependsOnTargets="RestorePackages;UpdateVersion">
+		<MSBuild Projects="$(SolutionFile)" Targets="Rebuild" Properties="Configuration=Release;Platform=Any CPU;NoWarn=1607" />
+	</Target>
+
+	<Target Name="Test" DependsOnTargets="Build">
+		<ItemGroup>
+			<TestAssemblies Include="bin/ReleaseTests/**/JSPool.Tests*.dll" />
+		</ItemGroup>
+		<NUnit
+			ToolPath="src\packages\NUnit.Runners.2.6.3\tools"
+			Assemblies="@(TestAssemblies)"
+		/>
+	</Target>
+
+	<Target Name="Package" DependsOnTargets="Build">
+		<!-- Delete old packages -->
+		<RemoveDir Directories="$(PackageOutputDir)" />
+
+		<!-- Create new packages -->
+		<MakeDir Directories="$(PackageOutputDir)" />
+		<Exec
+			WorkingDirectory="$(MSBuildProjectDirectory)"
+			Command="$(NuGetApp) pack src/%(PackageAssemblies.Identity)/%(PackageAssemblies.Identity).csproj -IncludeReferencedProjects -Symbols -Prop Configuration=Release -OutputDirectory output"
+		/>
+	</Target>
+
+	<Target Name="Push">
+		<CallTarget Targets="PushDev" Condition="$(BuildType) != 'Release'" />
+		<CallTarget Targets="PushRelease" Condition="$(BuildType) == 'Release'" />
+	</Target>
+	<Target Name="PushRelease">
+		<ItemGroup>
+			<PackageFiles Include="$(PackageOutputDir)\*.nupkg" Exclude="$(PackageOutputDir)\*.symbols.nupkg" />
+		</ItemGroup>
+		<Exec
+			WorkingDirectory="$(MSBuildProjectDirectory)"
+			Command="$(NuGetApp) push %(PackageFiles.Identity) -NonInteractive"
+		/>
+	</Target>
+</Project>
