@@ -80,7 +80,7 @@ The following configuration settings are available for JSPool:
    acquired in this timeframe, throws a `JsPoolExhaustedException`. Set this to
    -1 to wait indefinitely. Defaults to 5 seconds.
  - **EngineFactory**: Method used to create new JavaScript engines. Defaults to 
-   the default factory method in JavaScriptEngineSwitcher '
+   the default factory method in JavaScriptEngineSwitcher
    (`JsEngineSwitcher.Current.CreateDefaultJsEngineInstance`)
 
 Changelog
