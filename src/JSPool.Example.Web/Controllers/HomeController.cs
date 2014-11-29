@@ -7,9 +7,9 @@
 
 using System;
 using System.Web.Mvc;
-using JSPool.Example.Models;
+using JSPool.Example.Web.Models;
 
-namespace JSPool.Example.Controllers
+namespace JSPool.Example.Web.Controllers
 {
     public class HomeController : Controller
     {

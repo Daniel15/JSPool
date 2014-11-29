@@ -8,7 +8,7 @@
 using System.Web.Mvc;
 using System.Web.Routing;
 
-namespace JSPool.Example
+namespace JSPool.Example.Web
 {
     public class RouteConfig
     {

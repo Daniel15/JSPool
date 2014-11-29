@@ -7,7 +7,7 @@
 
 using System.Web;
 
-namespace JSPool.Example
+namespace JSPool.Example.Web
 {
 	public class JsPoolInitializer
 	{

@@ -5,7 +5,7 @@
  * LICENSE file in the root directory of this source tree. 
  */
 
-namespace JSPool.Example.Models
+namespace JSPool.Example.Web.Models
 {
 	public class HomeViewModel
 	{
