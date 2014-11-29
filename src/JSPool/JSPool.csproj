@@ -21,6 +21,7 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <DocumentationFile>..\..\bin\Debug\JSPool\JSPool.XML</DocumentationFile>
+    <NoWarn>1607</NoWarn>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -31,6 +32,7 @@
     <WarningLevel>4</WarningLevel>
     <DocumentationFile>..\..\bin\Release\JSPool\JSPool.XML</DocumentationFile>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <NoWarn>1607</NoWarn>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="JavaScriptEngineSwitcher.Core">
@@ -44,7 +46,10 @@
     <Compile Include="..\SharedAssemblyVersionInfo.cs">
       <Link>Properties\SharedAssemblyVersionInfo.cs</Link>
     </Compile>
+    <Compile Include="IJsEngineWithOwnThread.cs" />
     <Compile Include="IJsPool.cs" />
+    <Compile Include="JsEngineExtensions.cs" />
+    <Compile Include="JsEngineWithOwnThread.cs" />
     <Compile Include="JsPool.cs" />
     <Compile Include="JsPoolConfig.cs" />
     <Compile Include="Exceptions\JsPoolExhaustedException.cs" />
@@ -54,6 +59,7 @@
     <None Include="JSPool.nuspec" />
     <None Include="packages.config" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

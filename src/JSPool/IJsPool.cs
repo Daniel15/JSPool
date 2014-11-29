@@ -12,7 +12,7 @@ using JSPool.Exceptions;
 namespace JSPool
 {
 	/// <summary>
-	/// Handles acquiring JavaScript engines from a shared pool.
+	/// Handles acquiring JavaScript engines from a shared pool. This class is thread safe.
 	/// </summary>
 	public interface IJsPool : IDisposable
 	{

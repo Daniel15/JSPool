@@ -8,13 +8,14 @@
 using System;
 using System.Collections.Concurrent;
 using System.Diagnostics;
+using System.Threading;
 using JavaScriptEngineSwitcher.Core;
 using JSPool.Exceptions;
 
 namespace JSPool
 {
 	/// <summary>
-	/// Handles acquiring JavaScript engines from a shared pool.
+	/// Handles acquiring JavaScript engines from a shared pool. This class is thread-safe.
 	/// </summary>
 	[DebuggerDisplay("{DebuggerDisplay,nq}")]
 	public class JsPool : IJsPool
@@ -32,6 +33,14 @@ namespace JSPool
 		/// </summary>
 		protected readonly BlockingCollection<IJsEngine> _availableEngines = new BlockingCollection<IJsEngine>();
 		/// <summary>
+		/// Factory method used to create engines.
+		/// </summary>
+		protected readonly Func<IJsEngine> _engineFactory;
+		/// <summary>
+		/// Used to cancel threads when disposing the class.
+		/// </summary>
+		protected readonly CancellationTokenSource _cancellationTokenSource = new CancellationTokenSource();
+		/// <summary>
 		/// Lock object used when creating a new engine
 		/// </summary>
 		private readonly object _engineCreationLock = new object();
@@ -45,7 +54,28 @@ namespace JSPool
 		public JsPool(JsPoolConfig config = null)
 		{
 			_config = config ?? new JsPoolConfig();
+			_engineFactory = CreateEngineFactory();
 			PopulateEngines();
+		}
+
+		/// <summary>
+		/// Gets a factory method used to create engines.
+		/// </summary>
+		protected virtual Func<IJsEngine> CreateEngineFactory()
+		{
+			using (var tempEngine = _config.EngineFactory())
+			{
+				if (!tempEngine.NeedsOwnThread())
+				{
+					// Engine is fine with being accessed across multiple threads, we can just
+					// return its factory directly.
+					return _config.EngineFactory;
+				}
+				// Engine needs special treatment. This is the case with the MSIE engine, which
+				// can only be accessed from the thread it was created on. In this case we need
+				// to create the engine in a separate thread and marshall the requests across.
+				return () => new JsEngineWithOwnThread(_config.EngineFactory, _cancellationTokenSource.Token);
+			}
 		}
 
 		/// <summary>
@@ -65,7 +95,7 @@ namespace JSPool
 		/// </summary>
 		protected virtual IJsEngine CreateEngine()
 		{
-			var engine = _config.EngineFactory();
+			var engine = _engineFactory();
 			_config.Initializer(engine);
 			_allEngines.Add(engine);
 			return engine;
@@ -138,6 +168,7 @@ namespace JSPool
 			{
 				engine.Dispose();
 			}
+			_cancellationTokenSource.Cancel();
 		}
 
 		#region Statistics and debugging
