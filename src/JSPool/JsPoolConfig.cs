@@ -55,7 +55,7 @@ namespace JSPool
 			StartEngines = 10;
 			MaxEngines = 25;
 			GetEngineTimeout = TimeSpan.FromSeconds(5);
-			EngineFactory = () => JsEngineSwitcher.Current.CreateDefaultJsEngineInstance();
+			EngineFactory = JsEngineSwitcher.Current.CreateDefaultJsEngineInstance;
 			Initializer = engine => { };
 		}
 	}

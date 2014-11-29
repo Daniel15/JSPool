@@ -29,6 +29,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Examples", "Examples", "{D1
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Core", "Core", "{9A1CB8A1-7EFC-4BC1-A4D9-F036DAC3F84B}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "JSPool.Example.Console", "JSPool.Example.Console\JSPool.Example.Console.csproj", "{FB1E9161-E3C7-4915-AB69-A832968CDA98}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -47,12 +49,17 @@ Global
 		{9B7976EC-462F-4287-B545-C34D1601BB17}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{9B7976EC-462F-4287-B545-C34D1601BB17}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{9B7976EC-462F-4287-B545-C34D1601BB17}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FB1E9161-E3C7-4915-AB69-A832968CDA98}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FB1E9161-E3C7-4915-AB69-A832968CDA98}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FB1E9161-E3C7-4915-AB69-A832968CDA98}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FB1E9161-E3C7-4915-AB69-A832968CDA98}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{9B7976EC-462F-4287-B545-C34D1601BB17} = {D1BF49FA-FBDD-4AF6-A063-D191B78D399B}
+		{FB1E9161-E3C7-4915-AB69-A832968CDA98} = {D1BF49FA-FBDD-4AF6-A063-D191B78D399B}
 		{CA552A03-A2F1-4F37-B872-2572BA24D669} = {9A1CB8A1-7EFC-4BC1-A4D9-F036DAC3F84B}
 		{2A694F07-F503-46BF-AA7A-5C8DA8FB4B35} = {9A1CB8A1-7EFC-4BC1-A4D9-F036DAC3F84B}
 	EndGlobalSection

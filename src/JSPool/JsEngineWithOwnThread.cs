@@ -99,7 +99,17 @@ namespace JSPool
 			_innerEngine = _innerEngineFactory();
 			while (!_cancellationToken.IsCancellationRequested)
 			{
-				var item = _queue.Take(_cancellationToken);
+				ThreadWorkItem item;
+				try
+				{
+					item = _queue.Take(_cancellationToken);
+				}
+				catch (OperationCanceledException)
+				{
+					Trace.WriteLine(string.Format("JSPool thread {0}: Received cancellation request", _thread.ManagedThreadId));
+					return;
+				}
+
 				Trace.WriteLine(string.Format("JSPool thread {0}: Received call", _thread.ManagedThreadId));
 				try
 				{
