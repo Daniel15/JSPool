@@ -8,7 +8,7 @@ LICENSE file in the root directory of this source tree.
 <Project ToolsVersion="4.0" DefaultTargets="Build;Test;Package" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
 	<PropertyGroup>
 		<Major>0</Major>
-		<Minor>0</Minor>
+		<Minor>1</Minor>
 		<Build>0</Build>
 		<Revision>0</Revision>
 		<MSBuildCommunityTasksPath>$(MSBuildProjectDirectory)\src\packages\MSBuildTasks.1.4.0.78\tools\</MSBuildCommunityTasksPath>
