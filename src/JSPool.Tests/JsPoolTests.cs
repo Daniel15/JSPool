@@ -20,6 +20,7 @@ namespace JSPool.Tests
 		public void ConstructorCreatesEngines()
 		{
 			var factory = new Mock<IEngineFactoryForMock>();
+			factory.Setup(x => x.EngineFactory()).Returns(new Mock<IJsEngine>().Object);
 			var config = new JsPoolConfig
 			{
 				StartEngines = 5,
@@ -28,7 +29,8 @@ namespace JSPool.Tests
 
 			var pool = new JsPool(config);
 			Assert.AreEqual(5, pool.AvailableEngineCount);
-			factory.Verify(x => x.EngineFactory(), Times.Exactly(5));
+			// 6 times because one is at the very beginning to check the engine type
+			factory.Verify(x => x.EngineFactory(), Times.Exactly(6));
 		}
 
 		[Test]
@@ -42,6 +44,9 @@ namespace JSPool.Tests
 			};
 			var factory = new Mock<IEngineFactoryForMock>();
 			factory.SetupSequence(x => x.EngineFactory())
+				// Initial call to factory is to determine engine type, we don't care
+				// about that here.
+				.Returns(new Mock<IJsEngine>().Object)
 				.Returns(engines[0])
 				.Returns(engines[1])
 				.Returns(engines[2]);
@@ -66,6 +71,7 @@ namespace JSPool.Tests
 		public void GetEngineCreatesNewEngineIfNotAtMaximum()
 		{
 			var factory = new Mock<IEngineFactoryForMock>();
+			factory.Setup(x => x.EngineFactory()).Returns(new Mock<IJsEngine>().Object);
 			var config = new JsPoolConfig
 			{
 				StartEngines = 1,
@@ -74,14 +80,14 @@ namespace JSPool.Tests
 			};
 
 			var pool = new JsPool(config);
-			factory.Verify(x => x.EngineFactory(), Times.Exactly(1));
+			factory.Verify(x => x.EngineFactory(), Times.Exactly(2));
 			pool.GetEngine(); // First engine created on init
-			factory.Verify(x => x.EngineFactory(), Times.Exactly(1));
+			factory.Verify(x => x.EngineFactory(), Times.Exactly(2));
 			Assert.AreEqual(1, pool.EngineCount);
 			Assert.AreEqual(0, pool.AvailableEngineCount);
 
 			pool.GetEngine(); // Second engine created JIT
-			factory.Verify(x => x.EngineFactory(), Times.Exactly(2));
+			factory.Verify(x => x.EngineFactory(), Times.Exactly(3));
 			Assert.AreEqual(2, pool.EngineCount);
 			Assert.AreEqual(0, pool.AvailableEngineCount);
 		}
@@ -90,6 +96,7 @@ namespace JSPool.Tests
 		public void GetEngineFailsIfAtMaximum()
 		{
 			var factory = new Mock<IEngineFactoryForMock>();
+			factory.Setup(x => x.EngineFactory()).Returns(new Mock<IJsEngine>().Object);
 			var config = new JsPoolConfig
 			{
 				StartEngines = 1,
@@ -98,7 +105,7 @@ namespace JSPool.Tests
 			};
 
 			var pool = new JsPool(config);
-			factory.Verify(x => x.EngineFactory(), Times.Exactly(1));
+			factory.Verify(x => x.EngineFactory(), Times.Exactly(2));
 			pool.GetEngine(); // First engine created on init
 
 			Assert.Throws<JsPoolExhaustedException>(() => 
@@ -110,6 +117,7 @@ namespace JSPool.Tests
 		public void ReturnEngineToPoolAddsToAvailableEngines()
 		{
 			var factory = new Mock<IEngineFactoryForMock>();
+			factory.Setup(x => x.EngineFactory()).Returns(new Mock<IJsEngine>().Object);
 			var config = new JsPoolConfig
 			{
 				StartEngines = 2,
@@ -132,12 +140,14 @@ namespace JSPool.Tests
 				new Mock<IJsEngine>(),
 				new Mock<IJsEngine>(),
 				new Mock<IJsEngine>(),
+				new Mock<IJsEngine>(),
 			};
 			var factory = new Mock<IEngineFactoryForMock>();
 			factory.SetupSequence(x => x.EngineFactory())
 				.Returns(engines[0].Object)
 				.Returns(engines[1].Object)
-				.Returns(engines[2].Object);
+				.Returns(engines[2].Object)
+				.Returns(engines[3].Object);
 			var config = new JsPoolConfig
 			{
 				StartEngines = 3,
