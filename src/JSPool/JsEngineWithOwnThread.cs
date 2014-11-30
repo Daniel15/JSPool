@@ -233,7 +233,7 @@ namespace JSPool
 		/// <param name="encoding">Text encoding</param>
 		public virtual void ExecuteFile(string path, Encoding encoding = null)
 		{
-			RunOnThread(engine => ExecuteFile(path, encoding));
+			RunOnThread(engine => engine.ExecuteFile(path, encoding));
 		}
 
 		/// <summary>
@@ -317,7 +317,7 @@ namespace JSPool
 		/// <param name="value">Value of variable</param>
 		public virtual void SetVariableValue(string variableName, object value)
 		{
-			RunOnThread(engine => SetVariableValue(variableName, value));
+			RunOnThread(engine => engine.SetVariableValue(variableName, value));
 		}
 
 		/// <summary>
