@@ -91,11 +91,26 @@ namespace JSPool
 		}
 
 		/// <summary>
+		/// Writes a log message for debugging purposes. Only logs when compiled with 
+		/// TRACE flag.
+		/// </summary>
+		/// <param name="format">Format string</param>
+		/// <param name="args">Arguments for string</param>
+		[Conditional("TRACE")]
+		protected void WriteLog(string format, params object[] args)
+		{
+			Trace.WriteLine(
+				string.Format("[JSPool {0}] ", _thread.ManagedThreadId) +
+				string.Format(format, args)
+			);
+		}
+
+		/// <summary>
 		/// Runs in the thread for this engine. Loops forever, processing items from the queue.
 		/// </summary>
 		private void RunThread()
 		{
-			Trace.WriteLine(string.Format("Starting JSPool thread {0}", _thread.ManagedThreadId));
+			WriteLog("Starting thread");
 			_innerEngine = _innerEngineFactory();
 			while (!_cancellationToken.IsCancellationRequested)
 			{
@@ -106,11 +121,11 @@ namespace JSPool
 				}
 				catch (OperationCanceledException)
 				{
-					Trace.WriteLine(string.Format("JSPool thread {0}: Received cancellation request", _thread.ManagedThreadId));
+					WriteLog("Received cancellation request");
 					return;
 				}
 
-				Trace.WriteLine(string.Format("JSPool thread {0}: Received call", _thread.ManagedThreadId));
+				WriteLog("Received call");
 				try
 				{
 					item.Result = item.Method(_innerEngine);
@@ -120,9 +135,9 @@ namespace JSPool
 					item.Exception = ex;
 				}
 				item.WaitForCompletion.Set();
-				Trace.WriteLine(string.Format("JSPool thread {0}: Completed", _thread.ManagedThreadId));
+				WriteLog("Call completed");
 			}
-			Trace.WriteLine(string.Format("Stopping JSPool thread {0}", _thread.ManagedThreadId));
+			WriteLog("Stopping thread");
 		}
 
 		/// <summary>
