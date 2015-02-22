@@ -174,16 +174,24 @@ namespace JSPool
 		public virtual void ReturnEngineToPool(IJsEngine engine)
 		{
 			_metadata[engine].InUse = false;
-			if (_config.MaxUsagesPerEngine > 0 && _metadata[engine].UsageCount >= _config.MaxUsagesPerEngine)
+			var usageCount = _metadata[engine].UsageCount;
+            if (_config.MaxUsagesPerEngine > 0 && usageCount >= _config.MaxUsagesPerEngine)
 			{
 				// Engine has been reused the maximum number of times, recycle it.
 				DisposeEngine(engine);
+				return;
 			}
-			else
+
+			if (
+				_config.GarbageCollectionInterval > 0 && 
+				usageCount % _config.GarbageCollectionInterval == 0 &&
+				engine.SupportsGarbageCollection()
+			)
 			{
-				_availableEngines.Add(engine);
+				engine.CollectGarbage();
 			}
-			
+
+			_availableEngines.Add(engine);
 		}
 
 		/// <summary>

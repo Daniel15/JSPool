@@ -54,6 +54,12 @@ namespace JSPool
 		public int MaxUsagesPerEngine { get; set; }
 
 		/// <summary>
+		/// Gets or sets the number of times an engine can be reused before its garbage collector
+		/// is ran. Only used if the engine supports garbage collection (V8).
+		/// </summary>
+		public int GarbageCollectionInterval { get; set; }
+
+		/// <summary>
 		/// Creates a new JavaScript pool configuration. Default values will be set automatically.
 		/// </summary>
 		public JsPoolConfig()
@@ -61,6 +67,7 @@ namespace JSPool
 			StartEngines = 10;
 			MaxEngines = 25;
 			MaxUsagesPerEngine = 100;
+			GarbageCollectionInterval = 20;
 			GetEngineTimeout = TimeSpan.FromSeconds(5);
 			EngineFactory = JsEngineSwitcher.Current.CreateDefaultJsEngineInstance;
 			Initializer = engine => { };
