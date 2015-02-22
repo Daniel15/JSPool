@@ -198,14 +198,20 @@ namespace JSPool
 		/// Disposes the specified engine.
 		/// </summary>
 		/// <param name="engine">Engine to dispose</param>
-		public virtual void DisposeEngine(IJsEngine engine)
+		/// <param name="repopulateEngines">
+		/// If <c>true</c>, a new engine will be created to replace the disposed engine
+		/// </param>
+		public virtual void DisposeEngine(IJsEngine engine, bool repopulateEngines = true)
 		{
 			engine.Dispose();
 			_metadata.Remove(engine);
 			Interlocked.Decrement(ref _engineCount);
 
-			// Ensure we still have at least the minimum number of engines.
-			PopulateEngines();
+			if (repopulateEngines)
+			{
+				// Ensure we still have at least the minimum number of engines.
+				PopulateEngines();
+			}
 		}
 
 		/// <summary>
@@ -215,7 +221,7 @@ namespace JSPool
 		{
 			foreach (var engine in _availableEngines)
 			{
-				DisposeEngine(engine);
+				DisposeEngine(engine, repopulateEngines: false);
 			}
 			_cancellationTokenSource.Cancel();
 		}

@@ -55,6 +55,9 @@ namespace JSPool
 		/// Disposes the specified engine
 		/// </summary>
 		/// <param name="engine">Engine to dispose</param>
-		void DisposeEngine(IJsEngine engine);
+		/// <param name="repopulateEngines">
+		/// If <c>true</c>, a new engine will be created to replace the disposed engine
+		/// </param>
+		void DisposeEngine(IJsEngine engine, bool repopulateEngines = true);
 	}
 }
