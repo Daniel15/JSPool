@@ -42,24 +42,26 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="ClearScript">
-      <HintPath>..\packages\JavaScriptEngineSwitcher.V8.1.2.1\lib\net40\ClearScript.dll</HintPath>
+      <HintPath>..\packages\JavaScriptEngineSwitcher.V8.1.2.4\lib\net40\ClearScript.dll</HintPath>
     </Reference>
-    <Reference Include="JavaScriptEngineSwitcher.Core, Version=1.2.0.0, Culture=neutral, PublicKeyToken=c608b2a8cc9e4472, processorArchitecture=MSIL">
+    <Reference Include="JavaScriptEngineSwitcher.Core, Version=1.2.4.0, Culture=neutral, PublicKeyToken=c608b2a8cc9e4472, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\JavaScriptEngineSwitcher.Core.1.2.0\lib\net40\JavaScriptEngineSwitcher.Core.dll</HintPath>
+      <HintPath>..\packages\JavaScriptEngineSwitcher.Core.1.2.4\lib\net40\JavaScriptEngineSwitcher.Core.dll</HintPath>
     </Reference>
-    <Reference Include="JavaScriptEngineSwitcher.Msie">
-      <HintPath>..\packages\JavaScriptEngineSwitcher.Msie.1.2.0\lib\net40\JavaScriptEngineSwitcher.Msie.dll</HintPath>
+    <Reference Include="JavaScriptEngineSwitcher.Msie, Version=1.2.4.0, Culture=neutral, PublicKeyToken=c608b2a8cc9e4472, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\JavaScriptEngineSwitcher.Msie.1.2.4\lib\net40\JavaScriptEngineSwitcher.Msie.dll</HintPath>
     </Reference>
     <Reference Include="JavaScriptEngineSwitcher.V8">
-      <HintPath>..\packages\JavaScriptEngineSwitcher.V8.1.2.1\lib\net40\JavaScriptEngineSwitcher.V8.dll</HintPath>
+      <HintPath>..\packages\JavaScriptEngineSwitcher.V8.1.2.4\lib\net40\JavaScriptEngineSwitcher.V8.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="Microsoft.Web.Infrastructure">
       <HintPath>..\packages\Microsoft.Web.Infrastructure.1.0.0.0\lib\net40\Microsoft.Web.Infrastructure.dll</HintPath>
     </Reference>
-    <Reference Include="MsieJavaScriptEngine">
-      <HintPath>..\packages\MsieJavaScriptEngine.1.5.0\lib\net40\MsieJavaScriptEngine.dll</HintPath>
+    <Reference Include="MsieJavaScriptEngine, Version=1.5.1.0, Culture=neutral, PublicKeyToken=a3a2846a37ac0d3e, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\MsieJavaScriptEngine.1.5.1\lib\net40\MsieJavaScriptEngine.dll</HintPath>
     </Reference>
     <Reference Include="System.Web.DynamicData" />
     <Reference Include="System.Web.Entity" />
