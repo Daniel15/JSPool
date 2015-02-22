@@ -74,5 +74,19 @@ namespace JSPool.Tests
 
 			Assert.AreEqual("Hello World", result);
 		}
+
+		[Test]
+		public void HandlesDisposal()
+		{
+			var innerEngine = new Mock<IJsEngine>();
+			var factory = new Mock<IEngineFactoryForMock>();
+			factory.Setup(x => x.EngineFactory()).Returns(innerEngine.Object);
+
+			var engine = new JsEngineWithOwnThread(factory.Object.EngineFactory, new CancellationToken());
+			engine.Dispose();
+
+			innerEngine.Verify(x => x.Dispose());
+			Assert.IsFalse(engine.IsThreadAlive);
+		}
 	}
 }

@@ -133,6 +133,47 @@ namespace JSPool.Tests
 		}
 
 		[Test]
+		public void ReturnEngineDisposesIfAtMaxUsages()
+		{
+			var mockEngine1 = new Mock<IJsEngine>();
+			var mockEngine2 = new Mock<IJsEngine>();
+            var factory = new Mock<IEngineFactoryForMock>();
+			factory.SetupSequence(x => x.EngineFactory())
+				// First engine is a dummy engine to check functionality
+				.Returns(new Mock<IJsEngine>().Object)
+				.Returns(mockEngine1.Object)
+				.Returns(mockEngine2.Object);
+			var config = new JsPoolConfig
+			{
+				StartEngines = 1,
+				MaxUsagesPerEngine = 3,
+				EngineFactory = factory.Object.EngineFactory
+			};
+
+			var pool = new JsPool(config);
+
+			// First two usages should not recycle it
+			var engine = pool.GetEngine();
+			Assert.AreEqual(mockEngine1.Object, engine);
+			pool.ReturnEngineToPool(engine);
+			mockEngine1.Verify(x => x.Dispose(), Times.Never);
+
+			engine = pool.GetEngine();
+			Assert.AreEqual(mockEngine1.Object, engine);
+			pool.ReturnEngineToPool(engine);
+			mockEngine1.Verify(x => x.Dispose(), Times.Never);
+
+			// Third usage should recycle it, since the max usages is 3
+			engine = pool.GetEngine();
+			pool.ReturnEngineToPool(engine);
+			mockEngine1.Verify(x => x.Dispose());
+
+			// Next usage should get a new engine
+			engine = pool.GetEngine();
+			Assert.AreEqual(mockEngine2.Object, engine);
+		}
+
+		[Test]
 		public void DisposeDisposesAllEngines()
 		{
 			var engines = new[]
