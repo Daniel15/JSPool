@@ -50,5 +50,11 @@ namespace JSPool
 		/// Gets the number of currently available engines in this engine pool.
 		/// </summary>
 		int AvailableEngineCount { get; }
+
+		/// <summary>
+		/// Disposes the specified engine
+		/// </summary>
+		/// <param name="engine">Engine to dispose</param>
+		void DisposeEngine(IJsEngine engine);
 	}
 }

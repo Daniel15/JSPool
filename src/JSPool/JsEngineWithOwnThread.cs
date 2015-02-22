@@ -68,6 +68,10 @@ namespace JSPool
 		/// </summary>
 		protected readonly CancellationToken _cancellationToken;
 		/// <summary>
+		/// Token used to stop the thread when the engine has been disposed
+		/// </summary>
+		protected readonly CancellationTokenSource _disposedCancellation = new CancellationTokenSource();
+		/// <summary>
 		/// Queue of method calls to run on the thread.
 		/// </summary>
 		protected readonly BlockingCollection<ThreadWorkItem> _queue = 
@@ -81,7 +85,9 @@ namespace JSPool
 		public JsEngineWithOwnThread(Func<IJsEngine> innerEngineFactory, CancellationToken cancellationToken)
 		{
 			_innerEngineFactory = innerEngineFactory;
-			_cancellationToken = cancellationToken;
+			// Cancellation token handles shutting down both when the whole pool is being shut down, and also
+			// when just this engine is being disposed.
+			_cancellationToken = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken, _disposedCancellation.Token).Token;
 			_thread = new Thread(RunThread, THREAD_STACK_SIZE)
 			{
 				Name = "JSPool Worker", 
@@ -208,7 +214,11 @@ namespace JSPool
 		/// </summary>
 		public void Dispose()
 		{
+			WriteLog("** Engine disposed");
 			RunOnThread(engine => engine.Dispose());
+			_disposedCancellation.Cancel();
+			_disposedCancellation.Dispose();
+			WriteLog("** Disposal complete");
 		}
 
 		/// <summary>

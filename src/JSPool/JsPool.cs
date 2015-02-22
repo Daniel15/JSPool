@@ -7,6 +7,7 @@
 
 using System;
 using System.Collections.Concurrent;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Threading;
 using JavaScriptEngineSwitcher.Core;
@@ -25,13 +26,17 @@ namespace JSPool
 		/// </summary>
 		protected readonly JsPoolConfig _config;
 		/// <summary>
-		/// All the engines that have been created.
-		/// </summary>
-		protected readonly ConcurrentBag<IJsEngine> _allEngines = new ConcurrentBag<IJsEngine>();
-		/// <summary>
 		/// Engines that are currently available for use.
 		/// </summary>
 		protected readonly BlockingCollection<IJsEngine> _availableEngines = new BlockingCollection<IJsEngine>();
+		/// <summary>
+		/// Metadata for the engines.
+		/// </summary>
+		protected readonly IDictionary<IJsEngine, EngineMetadata> _metadata = new Dictionary<IJsEngine, EngineMetadata>();
+		/// <summary>
+		/// Totan number of engines that have been created.
+		/// </summary>
+		protected int _engineCount;
 		/// <summary>
 		/// Factory method used to create engines.
 		/// </summary>
@@ -97,7 +102,8 @@ namespace JSPool
 		{
 			var engine = _engineFactory();
 			_config.Initializer(engine);
-			_allEngines.Add(engine);
+			_metadata[engine] = new EngineMetadata();
+			Interlocked.Increment(ref _engineCount);
 			return engine;
 		}
 
@@ -124,17 +130,17 @@ namespace JSPool
 			// First see if a pooled engine is immediately available
 			if (_availableEngines.TryTake(out engine))
 			{
-				return engine;
+				return TakeEngine(engine);
 			}
 
 			// If we're not at the limit, a new engine can be added immediately
-			if (_allEngines.Count < _config.MaxEngines)
+			if (EngineCount < _config.MaxEngines)
 			{
 				lock (_engineCreationLock)
 				{
-					if (_allEngines.Count < _config.MaxEngines)
+					if (EngineCount < _config.MaxEngines)
 					{
-						return CreateEngine();
+						return TakeEngine(CreateEngine());
 					}
 				}
 			}
@@ -147,6 +153,17 @@ namespace JSPool
 					_config.GetEngineTimeout
 				));
 			}
+			return TakeEngine(engine);
+		}
+
+		/// <summary>
+		/// Marks the specified engine as "in use"
+		/// </summary>
+		/// <param name="engine"></param>
+		private IJsEngine TakeEngine(IJsEngine engine)
+		{
+			_metadata[engine].InUse = true;
+			_metadata[engine].UsageCount++;
 			return engine;
 		}
 
@@ -156,17 +173,41 @@ namespace JSPool
 		/// <param name="engine">Engine to return</param>
 		public virtual void ReturnEngineToPool(IJsEngine engine)
 		{
-			_availableEngines.Add(engine);
+			_metadata[engine].InUse = false;
+			if (_config.MaxUsagesPerEngine > 0 && _metadata[engine].UsageCount >= _config.MaxUsagesPerEngine)
+			{
+				// Engine has been reused the maximum number of times, recycle it.
+				DisposeEngine(engine);
+			}
+			else
+			{
+				_availableEngines.Add(engine);
+			}
+			
+		}
+
+		/// <summary>
+		/// Disposes the specified engine.
+		/// </summary>
+		/// <param name="engine">Engine to dispose</param>
+		public virtual void DisposeEngine(IJsEngine engine)
+		{
+			engine.Dispose();
+			_metadata.Remove(engine);
+			Interlocked.Decrement(ref _engineCount);
+
+			// Ensure we still have at least the minimum number of engines.
+			PopulateEngines();
 		}
 
 		/// <summary>
 		/// Disposes all the JavaScript engines in this pool.
 		/// </summary>
-		public void Dispose()
+		public virtual void Dispose()
 		{
-			foreach (var engine in _allEngines)
+			foreach (var engine in _availableEngines)
 			{
-				engine.Dispose();
+				DisposeEngine(engine);
 			}
 			_cancellationTokenSource.Cancel();
 		}
@@ -176,15 +217,15 @@ namespace JSPool
 		/// Gets the total number of engines in this engine pool, including engines that are
 		/// currently busy.
 		/// </summary>
-		public int EngineCount
+		public virtual int EngineCount
 		{
-			get { return _allEngines.Count; }
+			get { return _engineCount; }
 		}
 
 		/// <summary>
 		/// Gets the number of currently available engines in this engine pool.
 		/// </summary>
-		public int AvailableEngineCount
+		public virtual int AvailableEngineCount
 		{
 			get { return _availableEngines.Count; }
 		}

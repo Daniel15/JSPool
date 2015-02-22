@@ -48,12 +48,19 @@ namespace JSPool
 		public Func<IJsEngine> EngineFactory { get; set; }
 
 		/// <summary>
+		/// Gets or sets the maximum number of times an engine can be reused before it is disposed.
+		/// <c>0</c> is unlimited.
+		/// </summary>
+		public int MaxUsagesPerEngine { get; set; }
+
+		/// <summary>
 		/// Creates a new JavaScript pool configuration. Default values will be set automatically.
 		/// </summary>
 		public JsPoolConfig()
 		{
 			StartEngines = 10;
 			MaxEngines = 25;
+			MaxUsagesPerEngine = 100;
 			GetEngineTimeout = TimeSpan.FromSeconds(5);
 			EngineFactory = JsEngineSwitcher.Current.CreateDefaultJsEngineInstance;
 			Initializer = engine => { };
