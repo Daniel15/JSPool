@@ -173,6 +173,15 @@ namespace JSPool
 		/// <param name="engine">Engine to return</param>
 		public virtual void ReturnEngineToPool(IJsEngine engine)
 		{
+			if (!_metadata.ContainsKey(engine))
+			{
+				// This engine was from another pool. This could happen if a pool is recycled
+				// and replaced with a different one (like what ReactJS.NET does when any 
+				// loaded files change). Let's just pretend we never saw it.
+				engine.Dispose();
+				return;
+			}
+
 			_metadata[engine].InUse = false;
 			var usageCount = _metadata[engine].UsageCount;
             if (_config.MaxUsagesPerEngine > 0 && usageCount >= _config.MaxUsagesPerEngine)

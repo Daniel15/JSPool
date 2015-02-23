@@ -203,6 +203,26 @@ namespace JSPool.Tests
 				engine.Verify(x => x.Dispose());
 			}
 		}
+
+		[Test]
+		public void ShouldIgnoreReturnToPoolIfUnknownEngine()
+		{
+			var factory = new Mock<IEngineFactoryForMock>();
+			factory.Setup(x => x.EngineFactory()).Returns(() => new Mock<IJsEngine>().Object);
+			var config = new JsPoolConfig
+			{
+				StartEngines = 1,
+				EngineFactory = factory.Object.EngineFactory
+			};
+			var rogueEngine = new Mock<IJsEngine>();
+
+			var pool = new JsPool(config);
+			pool.ReturnEngineToPool(rogueEngine.Object);
+
+			Assert.AreEqual(1, pool.AvailableEngineCount);
+			Assert.AreEqual(1, pool.EngineCount);
+			rogueEngine.Verify(x => x.Dispose());
+		}
 	}
 
 	public interface IEngineFactoryForMock
