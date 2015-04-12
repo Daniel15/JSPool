@@ -74,6 +74,11 @@ The following configuration settings are available for JSPool:
  - **Initializer**: Action called when a new engine is created. This should 
    configure the environment and load any required JavaScript libraries. The 
    engine will not be available for use until this method has completed.
+ - **MaxUsagesPerEngine**: The maximum number of times an engine can be reused
+   before it is disposed. 0 is unlimited. Defaults to 100.
+ - **GarbageCollectionInterval**: The number of times an engine can be reused
+   before its garbage collector is ran. Only affects engines that support 
+   garbage collection (V8). Defaults to 20.
  - **GetEngineTimeout**: If all engines in the pool are currently busy and 
    *MaxEngines* has been reached, the call to `GetEngine` will block for this 
    period of time waiting for an engine to become free. If an engine can not be 
@@ -83,8 +88,19 @@ The following configuration settings are available for JSPool:
    the default factory method in JavaScriptEngineSwitcher
    (`JsEngineSwitcher.Current.CreateDefaultJsEngineInstance`)
 
+
 Changelog
 =========
+0.2 - 21st February 2015
+------------------------
+ - [#2](https://github.com/Daniel15/JSPool/issues/2) - Collect garbage when
+   engine returned to pool
+ - [#3](https://github.com/Daniel15/JSPool/issues/3) - Recycle workers after a
+   certain number of usages
+ - [#4](https://github.com/Daniel15/JSPool/issues/4) and
+   [#5](https://github.com/Daniel15/JSPool/issues/5) - Upgrade 
+   JavaScriptEngineSwitcher to latest version to allow settings such as max heap
+   size in Web.config or App.config
 
 0.1 - 28th November 2014
 ------------------------
