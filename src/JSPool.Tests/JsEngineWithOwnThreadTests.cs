@@ -10,6 +10,7 @@ using System.Threading;
 using JavaScriptEngineSwitcher.Core;
 using Moq;
 using NUnit.Framework;
+using NUnit.Framework.Constraints;
 
 namespace JSPool.Tests
 {
@@ -86,7 +87,7 @@ namespace JSPool.Tests
 			engine.Dispose();
 
 			innerEngine.Verify(x => x.Dispose());
-			Assert.IsFalse(engine.IsThreadAlive);
+			Assert.That(() => engine.IsThreadAlive, Is.False.After(250, 5));
 		}
 	}
 }
