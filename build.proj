@@ -9,7 +9,7 @@ LICENSE file in the root directory of this source tree.
 	<PropertyGroup>
 		<Major>0</Major>
 		<Minor>2</Minor>
-		<Build>1-dev</Build>
+		<Build>1</Build>
 		<Revision>0</Revision>
 		<MSBuildCommunityTasksPath>$(MSBuildProjectDirectory)\src\packages\MSBuildTasks.1.4.0.78\tools\</MSBuildCommunityTasksPath>
 		<NuGetApp>&quot;$(MSBuildProjectDirectory)\src\packages\NuGet.CommandLine.2.8.3\tools\NuGet.exe&quot;</NuGetApp>
