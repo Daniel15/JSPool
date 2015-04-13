@@ -55,6 +55,8 @@
       <Link>Properties\SharedAssemblyVersionInfo.cs</Link>
     </Compile>
     <Compile Include="EngineMetadata.cs" />
+    <Compile Include="FileWatcher.cs" />
+    <Compile Include="IFileWatcher.cs" />
     <Compile Include="IJsEngineWithOwnThread.cs" />
     <Compile Include="IJsPool.cs" />
     <Compile Include="JsEngineExtensions.cs" />

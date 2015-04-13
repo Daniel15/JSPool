@@ -1,11 +1,12 @@
 ﻿/*
- * Copyright (c) 2014 Daniel Lo Nigro (Daniel15)
+ * Copyright (c) 2014-2015 Daniel Lo Nigro (Daniel15)
  * 
  * This source code is licensed under the BSD-style license found in the 
  * LICENSE file in the root directory of this source tree. 
  */
 
 using System;
+using System.Collections.Generic;
 using JavaScriptEngineSwitcher.Core;
 using JSPool.Exceptions;
 
@@ -58,6 +59,19 @@ namespace JSPool
 		/// is ran. Only used if the engine supports garbage collection (V8).
 		/// </summary>
 		public int GarbageCollectionInterval { get; set; }
+
+		/// <summary>
+		/// Gets or sets the path to watch for file changes. If any files in this path change,
+		/// all engines in the pool will be recycled
+		/// </summary>
+		public string WatchPath { get; set; }
+
+		/// <summary>
+		/// Gets or sets the file paths to watch for file changes. Requires 
+		/// <see cref="WatchPath" /> to be set too. If not set, all files in 
+		/// <see cref="WatchPath" /> will be watched.
+		/// </summary>
+		public IEnumerable<string> WatchFiles { get; set; }
 
 		/// <summary>
 		/// Creates a new JavaScript pool configuration. Default values will be set automatically.

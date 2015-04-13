@@ -42,6 +42,11 @@ namespace JSPool
 		/// </summary>
 		protected readonly Func<IJsEngine> _engineFactory;
 		/// <summary>
+		/// Handles watching for changes to files, to recycle the engines if any related files change.
+		/// </summary>
+		protected IFileWatcher _fileWatcher;
+
+		/// <summary>
 		/// Used to cancel threads when disposing the class.
 		/// </summary>
 		protected readonly CancellationTokenSource _cancellationTokenSource = new CancellationTokenSource();
@@ -61,6 +66,7 @@ namespace JSPool
 			_config = config ?? new JsPoolConfig();
 			_engineFactory = CreateEngineFactory();
 			PopulateEngines();
+			InitializeWatcher();
 		}
 
 		/// <summary>
@@ -80,6 +86,23 @@ namespace JSPool
 				// can only be accessed from the thread it was created on. In this case we need
 				// to create the engine in a separate thread and marshall the requests across.
 				return () => new JsEngineWithOwnThread(_config.EngineFactory, _cancellationTokenSource.Token);
+			}
+		}
+
+		/// <summary>
+		/// Initializes a <see cref="FileWatcher"/> if enabled in the configuration.
+		/// </summary>
+		protected virtual void InitializeWatcher()
+		{
+			if (!string.IsNullOrEmpty(_config.WatchPath))
+			{
+				_fileWatcher = new FileWatcher
+				{
+					Path = _config.WatchPath,
+					Files = _config.WatchFiles,
+				};
+				_fileWatcher.Changed += (sender, args) => Recycle();
+				_fileWatcher.Start();
 			}
 		}
 
@@ -224,15 +247,43 @@ namespace JSPool
 		}
 
 		/// <summary>
+		/// Disposes all engines in this pool. Note that this will only dispose the engines that 
+		/// are *currently* available. Engines that are in use will be disposed when the user
+		/// attempts to return them.
+		/// </summary>
+		protected virtual void DisposeAllEngines()
+		{
+			IJsEngine engine;
+			while (_availableEngines.TryTake(out engine))
+			{
+				DisposeEngine(engine, repopulateEngines: false);
+			}
+			// Also clear out all metadata so engines that are currently in use while this disposal is 
+			// happening get disposed on return.
+			_metadata.Clear();
+			_engineCount = 0;
+		}
+
+		/// <summary>
+		/// Disposes all engines in this pool, and creates new engines in their place.
+		/// </summary>
+		public virtual void Recycle()
+		{
+			DisposeAllEngines();
+			PopulateEngines();
+		}
+
+		/// <summary>
 		/// Disposes all the JavaScript engines in this pool.
 		/// </summary>
 		public virtual void Dispose()
 		{
-			foreach (var engine in _availableEngines)
-			{
-				DisposeEngine(engine, repopulateEngines: false);
-			}
+			DisposeAllEngines();
 			_cancellationTokenSource.Cancel();
+			if (_fileWatcher != null)
+			{
+				_fileWatcher.Dispose();
+			}
 		}
 
 		#region Statistics and debugging

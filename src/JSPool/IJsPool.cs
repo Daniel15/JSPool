@@ -59,5 +59,10 @@ namespace JSPool
 		/// If <c>true</c>, a new engine will be created to replace the disposed engine
 		/// </param>
 		void DisposeEngine(IJsEngine engine, bool repopulateEngines = true);
+
+		/// <summary>
+		/// Disposes all engines in this pool, and creates new engines in their place.
+		/// </summary>
+		void Recycle();
 	}
 }

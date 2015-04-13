@@ -223,6 +223,29 @@ namespace JSPool.Tests
 			Assert.AreEqual(1, pool.EngineCount);
 			rogueEngine.Verify(x => x.Dispose());
 		}
+
+		[Test]
+		public void RecycleCreatesNewEngines()
+		{
+			var factory = new Mock<IEngineFactoryForMock>();
+			factory.Setup(x => x.EngineFactory()).Returns(new Mock<IJsEngine>().Object);
+			var config = new JsPoolConfig
+			{
+				StartEngines = 2,
+				EngineFactory = factory.Object.EngineFactory
+			};
+
+			var pool = new JsPool(config);
+			Assert.AreEqual(2, pool.AvailableEngineCount);
+			// 3 times because one is at the very beginning to check the engine type
+			factory.Verify(x => x.EngineFactory(), Times.Exactly(3));
+
+			// Now recycle the pool
+			pool.Recycle();
+			Assert.AreEqual(2, pool.AvailableEngineCount);
+			// Two more engines should have been created
+			factory.Verify(x => x.EngineFactory(), Times.Exactly(5));
+		}
 	}
 
 	public interface IEngineFactoryForMock
