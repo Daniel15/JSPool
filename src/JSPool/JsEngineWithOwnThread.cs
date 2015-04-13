@@ -159,7 +159,7 @@ namespace JSPool
 				Method = method,
 				WaitForCompletion = new ManualResetEvent(initialState: false),
 			};
-			_queue.Add(item, _cancellationToken);
+			_queue.Add(item);
 			item.WaitForCompletion.WaitOne();
 			if (item.Exception != null)
 			{
