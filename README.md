@@ -84,6 +84,11 @@ The following configuration settings are available for JSPool:
    period of time waiting for an engine to become free. If an engine can not be 
    acquired in this timeframe, throws a `JsPoolExhaustedException`. Set this to
    -1 to wait indefinitely. Defaults to 5 seconds.
+ - **WatchPath**: Path to watch for file changes. If any files in this path
+   change, all engines in the pool will be recycled.
+ - **WatchFiles**: Used in combination with WatchPath. If specified, only these
+   particular files within the path will be watched. If not specified, all files
+   within the path will be watched.
  - **EngineFactory**: Method used to create new JavaScript engines. Defaults to 
    the default factory method in JavaScriptEngineSwitcher
    (`JsEngineSwitcher.Current.CreateDefaultJsEngineInstance`)
@@ -91,6 +96,13 @@ The following configuration settings are available for JSPool:
 
 Changelog
 =========
+0.3 - 12th April 2015
+---------------------
+ - Added `Recycle` method to dispose all current engines and create new ones. 
+   This is essentially the same as disposing the whole pool and creating a new
+   pool
+ - Added the ability to recycle the pool when any watched files are modified
+
 0.2 - 21st February 2015
 ------------------------
  - [#2](https://github.com/Daniel15/JSPool/issues/2) - Collect garbage when
