@@ -6,6 +6,7 @@
  */
 
 using System;
+using System.IO;
 using JavaScriptEngineSwitcher.Core;
 using JSPool.Exceptions;
 using Moq;
@@ -245,6 +246,24 @@ namespace JSPool.Tests
 			Assert.AreEqual(2, pool.AvailableEngineCount);
 			// Two more engines should have been created
 			factory.Verify(x => x.EngineFactory(), Times.Exactly(5));
+		}
+
+		[Test]
+		public void WatchPathWithoutWatchFilesDoesNotThrow()
+		{
+			var factory = new Mock<IEngineFactoryForMock>();
+			factory.Setup(x => x.EngineFactory()).Returns(new Mock<IJsEngine>().Object);
+			var config = new JsPoolConfig
+			{
+				StartEngines = 2,
+				EngineFactory = factory.Object.EngineFactory,
+				WatchPath = Directory.GetCurrentDirectory(),
+			};
+			Assert.DoesNotThrow(() =>
+			{
+				// ReSharper disable once UnusedVariable
+				var pool = new JsPool(config);
+			});	
 		}
 	}
 

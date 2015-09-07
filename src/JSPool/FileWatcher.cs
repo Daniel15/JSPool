@@ -52,7 +52,17 @@ namespace JSPool
 		public IEnumerable<string> Files
 		{
 			get {  return _watchedFiles; }
-			set { _watchedFiles = new HashSet<string>(value.Select(name => name.ToLowerInvariant())); }
+			set
+			{
+				if (value == null || !value.Any())
+				{
+					_watchedFiles = null;
+				}
+				else
+				{
+					_watchedFiles = new HashSet<string>(value.Select(name => name.ToLowerInvariant()));
+				}
+			}
 		}
 
 		/// <summary>
