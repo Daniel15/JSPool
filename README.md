@@ -96,6 +96,12 @@ The following configuration settings are available for JSPool:
 
 Changelog
 =========
+0.3.1 - 15th November 2015
+--------------------------
+ - [#8](https://github.com/Daniel15/JSPool/issues/8) - Do not throw if 
+   `WatchPath` is used without `WatchFiles`
+ - Fire `Recycled` event when pool is recycled
+
 0.3 - 12th April 2015
 ---------------------
  - Added `Recycle` method to dispose all current engines and create new ones. 
