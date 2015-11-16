@@ -56,6 +56,11 @@ namespace JSPool
 		private readonly object _engineCreationLock = new object();
 
 		/// <summary>
+		/// Occurs when any watched files have changed (including renames and deletions).
+		/// </summary>
+		public event EventHandler Recycled;
+
+		/// <summary>
 		/// Creates a new JavaScript engine pool
 		/// </summary>
 		/// <param name="config">
@@ -269,6 +274,11 @@ namespace JSPool
 		/// </summary>
 		public virtual void Recycle()
 		{
+			if (Recycled != null)
+			{
+				Recycled(this, null);
+			}
+
 			DisposeAllEngines();
 			PopulateEngines();
 		}

@@ -248,6 +248,30 @@ namespace JSPool.Tests
 			factory.Verify(x => x.EngineFactory(), Times.Exactly(5));
 		}
 
+
+		[Test]
+		public void RecycleFiresRecycledEvent()
+		{
+			var callCount = 0;
+			var factory = new Mock<IEngineFactoryForMock>();
+			factory.Setup(x => x.EngineFactory()).Returns(new Mock<IJsEngine>().Object);
+			var config = new JsPoolConfig
+			{
+				StartEngines = 2,
+				EngineFactory = factory.Object.EngineFactory
+			};
+
+			var pool = new JsPool(config);
+			pool.Recycled += (sender, args) => callCount++;
+			Assert.AreEqual(0, callCount);
+
+			pool.Recycle();
+			Assert.AreEqual(1, callCount);
+
+			pool.Recycle();
+			Assert.AreEqual(2, callCount);
+		}
+
 		[Test]
 		public void WatchPathWithoutWatchFilesDoesNotThrow()
 		{
