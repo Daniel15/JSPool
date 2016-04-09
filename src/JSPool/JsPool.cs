@@ -32,7 +32,7 @@ namespace JSPool
 		/// <summary>
 		/// Metadata for the engines.
 		/// </summary>
-		protected readonly IDictionary<IJsEngine, EngineMetadata> _metadata = new Dictionary<IJsEngine, EngineMetadata>();
+		protected readonly IDictionary<IJsEngine, EngineMetadata> _metadata = new ConcurrentDictionary<IJsEngine, EngineMetadata>();
 		/// <summary>
 		/// Totan number of engines that have been created.
 		/// </summary>
