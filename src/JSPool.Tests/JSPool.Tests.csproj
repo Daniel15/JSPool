@@ -58,6 +58,7 @@
       <Link>Properties\SharedAssemblyVersionInfo.cs</Link>
     </Compile>
     <Compile Include="JsEngineWithOwnThreadTests.cs" />
+    <Compile Include="JsPoolLoadTests.cs" />
     <Compile Include="JsPoolTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
