@@ -96,6 +96,11 @@ The following configuration settings are available for JSPool:
 
 Changelog
 =========
+0.3.2 - 9th April 2016
+----------------------
+ - [#13](https://github.com/Daniel15/JSPool/issues/13) - Fix concurrency
+   issue
+
 0.3.1 - 15th November 2015
 --------------------------
  - [#8](https://github.com/Daniel15/JSPool/issues/8) - Do not throw if 
