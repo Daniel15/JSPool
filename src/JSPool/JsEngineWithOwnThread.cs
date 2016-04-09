@@ -353,6 +353,26 @@ namespace JSPool
 		{
 			RunOnThread(engine => engine.RemoveVariable(variableName));
 		}
+
+		/// <summary>
+		/// Embeds a .NET type in the JavaScript engine.
+		/// </summary>
+		/// <param name="itemName">Name of the type</param>
+		/// <param name="type">The type</param>
+		public void EmbedHostType(string itemName, Type type)
+		{
+			RunOnThread(engine => engine.EmbedHostType(itemName, type));
+		}
+
+		/// <summary>
+		/// Embeds a .NET object in the JavaScript engine.
+		/// </summary>
+		/// <param name="itemName">Name of the item</param>
+		/// <param name="value">Value of the item</param>
+		public void EmbedHostObject(string itemName, object value)
+		{
+			RunOnThread(engine => engine.EmbedHostObject(itemName, value));
+		}
 		#endregion
 	}
 }

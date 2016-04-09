@@ -95,6 +95,11 @@
 		<xs:annotation>
 			<xs:documentation>Configuration settings of MSIE JavaScript engine</xs:documentation>
 		</xs:annotation>
+		<xs:attribute name="enableDebugging" type="Boolean_SchemaType" use="optional" default="false">
+			<xs:annotation>
+				<xs:documentation>Flag for whether to enable script debugging features (only works in the `ChakraIeJsRt` and `ChakraEdgeJsRt` modes)</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
 		<xs:attribute name="engineMode" use="optional" default="Auto">
 			<xs:annotation>
 				<xs:documentation>JavaScript engine mode</xs:documentation>
@@ -116,13 +121,28 @@
 							<xs:documentation>ActiveScript version of Chakra JavaScript engine (supports ECMAScript 3 with possibility of using the ECMAScript 5 Polyfill and the JSON2 library). Requires Internet Explorer 9 or higher on the machine.</xs:documentation>
 						</xs:annotation>
 					</xs:enumeration>
-					<xs:enumeration value="ChakraJsRt">
+					<xs:enumeration value="ChakraIeJsRt">
 						<xs:annotation>
-							<xs:documentation>JsRT version of Chakra JavaScript engine (supports ECMAScript 5). Requires Internet Explorer 11 or higher on the machine.</xs:documentation>
+							<xs:documentation>“IE” JsRT version of Chakra JavaScript engine (supports ECMAScript 5). Requires Internet Explorer 11 or Microsoft Edge on the machine.</xs:documentation>
+						</xs:annotation>
+					</xs:enumeration>
+					<xs:enumeration value="ChakraEdgeJsRt">
+						<xs:annotation>
+							<xs:documentation>“Edge” JsRT version of Chakra JavaScript engine (supports ECMAScript 5). Requires Microsoft Edge on the machine.</xs:documentation>
 						</xs:annotation>
 					</xs:enumeration>
 				</xs:restriction>
 			</xs:simpleType>
+		</xs:attribute>
+		<xs:attribute name="useEcmaScript5Polyfill" type="Boolean_SchemaType" use="optional" default="false">
+			<xs:annotation>
+				<xs:documentation>Flag for whether to use the ECMAScript 5 Polyfill</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="useJson2Library" type="Boolean_SchemaType" use="optional" default="false">
+			<xs:annotation>
+				<xs:documentation>Flag for whether to use the JSON2 library</xs:documentation>
+			</xs:annotation>
 		</xs:attribute>
 	</xs:complexType>
 	<!--/ MSIE configuration settings -->
@@ -155,7 +175,7 @@
 		</xs:attribute>
 		<xs:attribute name="maxNewSpaceSize" use="optional" default="0">
 			<xs:annotation>
-				<xs:documentation>Maximum size of the new object heap in bytes</xs:documentation>
+				<xs:documentation>Maximum size of the new object heap in mebibytes</xs:documentation>
 			</xs:annotation>
 			<xs:simpleType>
 				<xs:restriction base="xs:int">
@@ -166,7 +186,7 @@
 		</xs:attribute>
 		<xs:attribute name="maxOldSpaceSize" use="optional" default="0">
 			<xs:annotation>
-				<xs:documentation>Maximum size of the old object heap in bytes</xs:documentation>
+				<xs:documentation>Maximum size of the old object heap in mebibytes</xs:documentation>
 			</xs:annotation>
 			<xs:simpleType>
 				<xs:restriction base="xs:int">
@@ -177,7 +197,7 @@
 		</xs:attribute>
 		<xs:attribute name="maxExecutableSize" use="optional" default="0">
 			<xs:annotation>
-				<xs:documentation>Maximum size of the executable code heap in bytes</xs:documentation>
+				<xs:documentation>Maximum size of the executable code heap in mebibytes</xs:documentation>
 			</xs:annotation>
 			<xs:simpleType>
 				<xs:restriction base="xs:int">
@@ -217,12 +237,17 @@
 		<xs:annotation>
 			<xs:documentation>Configuration settings of Jint JavaScript engine</xs:documentation>
 		</xs:annotation>
-		<xs:attribute name="enableDebugging" type="Boolean_SchemaType" use="optional" default="false">
+		<xs:attribute name="allowDebuggerStatement" type="Boolean_SchemaType" use="optional" default="false">
 			<xs:annotation>
-				<xs:documentation>Flag for whether to enable script debugging features (allows a `debugger` statement to be called in a script)</xs:documentation>
+				<xs:documentation>Flag for whether to allow the `debugger` statement to be called in a script</xs:documentation>
 			</xs:annotation>
 		</xs:attribute>
-		<xs:attribute name="maxRecursionDepth" use="optional" default="20678">
+		<xs:attribute name="enableDebugging" type="Boolean_SchemaType" use="optional" default="false">
+			<xs:annotation>
+				<xs:documentation>Flag for whether to enable debug mode</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="maxRecursionDepth" use="optional" default="-1">
 			<xs:annotation>
 				<xs:documentation>Maximum allowed depth of recursion:
  -1 - recursion without limits;
