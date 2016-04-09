@@ -96,6 +96,10 @@ The following configuration settings are available for JSPool:
 
 Changelog
 =========
+0.4.0 - 9th April 2016
+----------------------
+ - Upgrade to latest JavaScriptEngineSwitcher
+
 0.3.2 - 9th April 2016
 ----------------------
  - [#13](https://github.com/Daniel15/JSPool/issues/13) - Fix concurrency
