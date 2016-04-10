@@ -30,13 +30,9 @@ namespace JSPool
 		/// </summary>
 		protected readonly BlockingCollection<IJsEngine> _availableEngines = new BlockingCollection<IJsEngine>();
 		/// <summary>
-		/// Metadata for the engines.
+		/// Metadata for the engines. Total number of engines that have been created is reflected in its Count.
 		/// </summary>
 		protected readonly IDictionary<IJsEngine, EngineMetadata> _metadata = new ConcurrentDictionary<IJsEngine, EngineMetadata>();
-		/// <summary>
-		/// Totan number of engines that have been created.
-		/// </summary>
-		protected int _engineCount;
 		/// <summary>
 		/// Factory method used to create engines.
 		/// </summary>
@@ -131,7 +127,6 @@ namespace JSPool
 			var engine = _engineFactory();
 			_config.Initializer(engine);
 			_metadata[engine] = new EngineMetadata();
-			Interlocked.Increment(ref _engineCount);
 			return engine;
 		}
 
@@ -190,8 +185,9 @@ namespace JSPool
 		/// <param name="engine"></param>
 		private IJsEngine TakeEngine(IJsEngine engine)
 		{
-			_metadata[engine].InUse = true;
-			_metadata[engine].UsageCount++;
+			var metadata = _metadata[engine];
+			metadata.InUse = true;
+			metadata.UsageCount++;
 			return engine;
 		}
 
@@ -201,7 +197,8 @@ namespace JSPool
 		/// <param name="engine">Engine to return</param>
 		public virtual void ReturnEngineToPool(IJsEngine engine)
 		{
-			if (!_metadata.ContainsKey(engine))
+			EngineMetadata metadata;
+			if (!_metadata.TryGetValue(engine, out metadata))
 			{
 				// This engine was from another pool. This could happen if a pool is recycled
 				// and replaced with a different one (like what ReactJS.NET does when any 
@@ -210,9 +207,9 @@ namespace JSPool
 				return;
 			}
 
-			_metadata[engine].InUse = false;
-			var usageCount = _metadata[engine].UsageCount;
-            if (_config.MaxUsagesPerEngine > 0 && usageCount >= _config.MaxUsagesPerEngine)
+			metadata.InUse = false;
+			var usageCount = metadata.UsageCount;
+			if (_config.MaxUsagesPerEngine > 0 && usageCount >= _config.MaxUsagesPerEngine)
 			{
 				// Engine has been reused the maximum number of times, recycle it.
 				DisposeEngine(engine);
@@ -220,7 +217,7 @@ namespace JSPool
 			}
 
 			if (
-				_config.GarbageCollectionInterval > 0 && 
+				_config.GarbageCollectionInterval > 0 &&
 				usageCount % _config.GarbageCollectionInterval == 0 &&
 				engine.SupportsGarbageCollection()
 			)
@@ -242,7 +239,6 @@ namespace JSPool
 		{
 			engine.Dispose();
 			_metadata.Remove(engine);
-			Interlocked.Decrement(ref _engineCount);
 
 			if (repopulateEngines)
 			{
@@ -266,7 +262,6 @@ namespace JSPool
 			// Also clear out all metadata so engines that are currently in use while this disposal is 
 			// happening get disposed on return.
 			_metadata.Clear();
-			_engineCount = 0;
 		}
 
 		/// <summary>
@@ -303,7 +298,7 @@ namespace JSPool
 		/// </summary>
 		public virtual int EngineCount
 		{
-			get { return _engineCount; }
+			get { return _metadata.Count; }
 		}
 
 		/// <summary>

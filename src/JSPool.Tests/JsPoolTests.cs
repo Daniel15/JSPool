@@ -21,7 +21,7 @@ namespace JSPool.Tests
 		public void ConstructorCreatesEngines()
 		{
 			var factory = new Mock<IEngineFactoryForMock>();
-			factory.Setup(x => x.EngineFactory()).Returns(new Mock<IJsEngine>().Object);
+			factory.Setup(x => x.EngineFactory()).Returns(() => new Mock<IJsEngine>().Object);
 			var config = new JsPoolConfig
 			{
 				StartEngines = 5,
@@ -72,7 +72,7 @@ namespace JSPool.Tests
 		public void GetEngineCreatesNewEngineIfNotAtMaximum()
 		{
 			var factory = new Mock<IEngineFactoryForMock>();
-			factory.Setup(x => x.EngineFactory()).Returns(new Mock<IJsEngine>().Object);
+			factory.Setup(x => x.EngineFactory()).Returns(() => new Mock<IJsEngine>().Object);
 			var config = new JsPoolConfig
 			{
 				StartEngines = 1,
@@ -97,7 +97,7 @@ namespace JSPool.Tests
 		public void GetEngineFailsIfAtMaximum()
 		{
 			var factory = new Mock<IEngineFactoryForMock>();
-			factory.Setup(x => x.EngineFactory()).Returns(new Mock<IJsEngine>().Object);
+			factory.Setup(x => x.EngineFactory()).Returns(() => new Mock<IJsEngine>().Object);
 			var config = new JsPoolConfig
 			{
 				StartEngines = 1,
@@ -109,7 +109,7 @@ namespace JSPool.Tests
 			factory.Verify(x => x.EngineFactory(), Times.Exactly(2));
 			pool.GetEngine(); // First engine created on init
 
-			Assert.Throws<JsPoolExhaustedException>(() => 
+			Assert.Throws<JsPoolExhaustedException>(() =>
 				pool.GetEngine(TimeSpan.Zero)
 			);
 		}
@@ -118,7 +118,7 @@ namespace JSPool.Tests
 		public void ReturnEngineToPoolAddsToAvailableEngines()
 		{
 			var factory = new Mock<IEngineFactoryForMock>();
-			factory.Setup(x => x.EngineFactory()).Returns(new Mock<IJsEngine>().Object);
+			factory.Setup(x => x.EngineFactory()).Returns(() => new Mock<IJsEngine>().Object);
 			var config = new JsPoolConfig
 			{
 				StartEngines = 2,
@@ -138,7 +138,7 @@ namespace JSPool.Tests
 		{
 			var mockEngine1 = new Mock<IJsEngine>();
 			var mockEngine2 = new Mock<IJsEngine>();
-            var factory = new Mock<IEngineFactoryForMock>();
+			var factory = new Mock<IEngineFactoryForMock>();
 			factory.SetupSequence(x => x.EngineFactory())
 				// First engine is a dummy engine to check functionality
 				.Returns(new Mock<IJsEngine>().Object)
@@ -229,7 +229,7 @@ namespace JSPool.Tests
 		public void RecycleCreatesNewEngines()
 		{
 			var factory = new Mock<IEngineFactoryForMock>();
-			factory.Setup(x => x.EngineFactory()).Returns(new Mock<IJsEngine>().Object);
+			factory.Setup(x => x.EngineFactory()).Returns(() => new Mock<IJsEngine>().Object);
 			var config = new JsPoolConfig
 			{
 				StartEngines = 2,
@@ -254,7 +254,7 @@ namespace JSPool.Tests
 		{
 			var callCount = 0;
 			var factory = new Mock<IEngineFactoryForMock>();
-			factory.Setup(x => x.EngineFactory()).Returns(new Mock<IJsEngine>().Object);
+			factory.Setup(x => x.EngineFactory()).Returns(() => new Mock<IJsEngine>().Object);
 			var config = new JsPoolConfig
 			{
 				StartEngines = 2,
@@ -276,7 +276,7 @@ namespace JSPool.Tests
 		public void WatchPathWithoutWatchFilesDoesNotThrow()
 		{
 			var factory = new Mock<IEngineFactoryForMock>();
-			factory.Setup(x => x.EngineFactory()).Returns(new Mock<IJsEngine>().Object);
+			factory.Setup(x => x.EngineFactory()).Returns(() => new Mock<IJsEngine>().Object);
 			var config = new JsPoolConfig
 			{
 				StartEngines = 2,
@@ -287,7 +287,7 @@ namespace JSPool.Tests
 			{
 				// ReSharper disable once UnusedVariable
 				var pool = new JsPool(config);
-			});	
+			});
 		}
 	}
 
