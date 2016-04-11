@@ -1,5 +1,5 @@
 ﻿/*
- * Copyright (c) 2014-2015 Daniel Lo Nigro (Daniel15)
+ * Copyright (c) 2014-2016 Daniel Lo Nigro (Daniel15)
  * 
  * This source code is licensed under the BSD-style license found in the 
  * LICENSE file in the root directory of this source tree. 
@@ -7,7 +7,6 @@
 
 using System;
 using System.Collections.Generic;
-using JavaScriptEngineSwitcher.Core;
 using JSPool.Exceptions;
 
 namespace JSPool
@@ -15,7 +14,7 @@ namespace JSPool
 	/// <summary>
 	/// Contains the configuration information for JSPool
 	/// </summary>
-	public class JsPoolConfig
+	public class JsPoolConfig<T>
 	{
 		/// <summary>
 		/// Gets or sets the number of engines to initially start when a pool is created. 
@@ -40,13 +39,13 @@ namespace JSPool
 		/// Gets or sets the code to run when a new engine is created. This should configure
 		/// the environment and set up any required JavaScript libraries.
 		/// </summary>
-		public Action<IJsEngine> Initializer { get; set; }
+		public Action<T> Initializer { get; set; }
 
 		/// <summary>
 		/// Gets or sets the function method used to create engines. Defaults to the standard 
 		/// JsEngineSwitcher factory method.
 		/// </summary>
-		public Func<IJsEngine> EngineFactory { get; set; }
+		public Func<T> EngineFactory { get; set; }
 
 		/// <summary>
 		/// Gets or sets the maximum number of times an engine can be reused before it is disposed.
@@ -83,7 +82,6 @@ namespace JSPool
 			MaxUsagesPerEngine = 100;
 			GarbageCollectionInterval = 20;
 			GetEngineTimeout = TimeSpan.FromSeconds(5);
-			EngineFactory = JsEngineSwitcher.Current.CreateDefaultJsEngineInstance;
 			Initializer = engine => { };
 		}
 	}

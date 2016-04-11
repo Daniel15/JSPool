@@ -10,7 +10,6 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Threading;
-using JavaScriptEngineSwitcher.Core;
 using JSPool.Exceptions;
 
 namespace JSPool
@@ -19,24 +18,24 @@ namespace JSPool
 	/// Handles acquiring JavaScript engines from a shared pool. This class is thread-safe.
 	/// </summary>
 	[DebuggerDisplay("{DebuggerDisplay,nq}")]
-	public class JsPool : IJsPool
+	public class JsPool<T> : IJsPool<T>
 	{
 		/// <summary>
 		/// Configuration for this engine pool.
 		/// </summary>
-		protected readonly JsPoolConfig _config;
+		protected readonly JsPoolConfig<T> _config;
 		/// <summary>
 		/// Engines that are currently available for use.
 		/// </summary>
-		protected readonly BlockingCollection<IJsEngine> _availableEngines = new BlockingCollection<IJsEngine>();
+		protected readonly BlockingCollection<T> _availableEngines = new BlockingCollection<T>();
 		/// <summary>
 		/// Metadata for the engines. Total number of engines that have been created is reflected in its Count.
 		/// </summary>
-		protected readonly IDictionary<IJsEngine, EngineMetadata> _metadata = new ConcurrentDictionary<IJsEngine, EngineMetadata>();
+		protected readonly IDictionary<T, EngineMetadata> _metadata = new ConcurrentDictionary<T, EngineMetadata>();
 		/// <summary>
 		/// Factory method used to create engines.
 		/// </summary>
-		protected readonly Func<IJsEngine> _engineFactory;
+		protected readonly Func<T> _engineFactory;
 		/// <summary>
 		/// Handles watching for changes to files, to recycle the engines if any related files change.
 		/// </summary>
@@ -62,9 +61,9 @@ namespace JSPool
 		/// <param name="config">
 		/// The configuration to use. If not provided, a default configuration will be used.
 		/// </param>
-		public JsPool(JsPoolConfig config = null)
+		public JsPool(JsPoolConfig<T> config)
 		{
-			_config = config ?? new JsPoolConfig();
+			_config = config;
 			_engineFactory = CreateEngineFactory();
 			PopulateEngines();
 			InitializeWatcher();
@@ -73,21 +72,9 @@ namespace JSPool
 		/// <summary>
 		/// Gets a factory method used to create engines.
 		/// </summary>
-		protected virtual Func<IJsEngine> CreateEngineFactory()
+		protected virtual Func<T> CreateEngineFactory()
 		{
-			using (var tempEngine = _config.EngineFactory())
-			{
-				if (!tempEngine.NeedsOwnThread())
-				{
-					// Engine is fine with being accessed across multiple threads, we can just
-					// return its factory directly.
-					return _config.EngineFactory;
-				}
-				// Engine needs special treatment. This is the case with the MSIE engine, which
-				// can only be accessed from the thread it was created on. In this case we need
-				// to create the engine in a separate thread and marshall the requests across.
-				return () => new JsEngineWithOwnThread(_config.EngineFactory, _cancellationTokenSource.Token);
-			}
+			return _config.EngineFactory;
 		}
 
 		/// <summary>
@@ -122,7 +109,7 @@ namespace JSPool
 		/// <summary>
 		/// Creates a new JavaScript engine and adds it to the list of all available engines.
 		/// </summary>
-		protected virtual IJsEngine CreateEngine()
+		protected virtual T CreateEngine()
 		{
 			var engine = _engineFactory();
 			_config.Initializer(engine);
@@ -146,9 +133,9 @@ namespace JSPool
 		/// <exception cref="JsPoolExhaustedException">
 		/// Thrown if no engines are available in the pool within the provided timeout period.
 		/// </exception>
-		public virtual IJsEngine GetEngine(TimeSpan? timeout = null)
+		public virtual T GetEngine(TimeSpan? timeout = null)
 		{
-			IJsEngine engine;
+			T engine;
 
 			// First see if a pooled engine is immediately available
 			if (_availableEngines.TryTake(out engine))
@@ -183,7 +170,7 @@ namespace JSPool
 		/// Marks the specified engine as "in use"
 		/// </summary>
 		/// <param name="engine"></param>
-		private IJsEngine TakeEngine(IJsEngine engine)
+		private T TakeEngine(T engine)
 		{
 			var metadata = _metadata[engine];
 			metadata.InUse = true;
@@ -195,7 +182,7 @@ namespace JSPool
 		/// Returns an engine to the pool so it can be reused
 		/// </summary>
 		/// <param name="engine">Engine to return</param>
-		public virtual void ReturnEngineToPool(IJsEngine engine)
+		public virtual void ReturnEngineToPool(T engine)
 		{
 			EngineMetadata metadata;
 			if (!_metadata.TryGetValue(engine, out metadata))
@@ -203,7 +190,10 @@ namespace JSPool
 				// This engine was from another pool. This could happen if a pool is recycled
 				// and replaced with a different one (like what ReactJS.NET does when any 
 				// loaded files change). Let's just pretend we never saw it.
-				engine.Dispose();
+				if (engine is IDisposable)
+				{
+					((IDisposable)engine).Dispose();
+				}
 				return;
 			}
 
@@ -218,11 +208,10 @@ namespace JSPool
 
 			if (
 				_config.GarbageCollectionInterval > 0 &&
-				usageCount % _config.GarbageCollectionInterval == 0 &&
-				engine.SupportsGarbageCollection()
+				metadata.UsageCount % _config.GarbageCollectionInterval == 0
 			)
 			{
-				engine.CollectGarbage();
+				CollectGarbage(engine);
 			}
 
 			_availableEngines.Add(engine);
@@ -235,9 +224,12 @@ namespace JSPool
 		/// <param name="repopulateEngines">
 		/// If <c>true</c>, a new engine will be created to replace the disposed engine
 		/// </param>
-		public virtual void DisposeEngine(IJsEngine engine, bool repopulateEngines = true)
+		public virtual void DisposeEngine(T engine, bool repopulateEngines = true)
 		{
-			engine.Dispose();
+			if (engine is IDisposable)
+			{
+				((IDisposable)engine).Dispose();
+			}
 			_metadata.Remove(engine);
 
 			if (repopulateEngines)
@@ -254,7 +246,7 @@ namespace JSPool
 		/// </summary>
 		protected virtual void DisposeAllEngines()
 		{
-			IJsEngine engine;
+			T engine;
 			while (_availableEngines.TryTake(out engine))
 			{
 				DisposeEngine(engine, repopulateEngines: false);
@@ -289,6 +281,15 @@ namespace JSPool
 			{
 				_fileWatcher.Dispose();
 			}
+		}
+		
+		/// <summary>
+		/// Runs garbage collection for the specified engine
+		/// </summary>
+		/// <param name="engine"></param>
+		protected virtual void CollectGarbage(T engine)
+		{
+			// No-op by default
 		}
 
 		#region Statistics and debugging

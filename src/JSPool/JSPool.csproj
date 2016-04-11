@@ -58,12 +58,14 @@
     <Compile Include="FileWatcher.cs" />
     <Compile Include="IFileWatcher.cs" />
     <Compile Include="IJsEngineWithOwnThread.cs" />
+    <Compile Include="IJavaScriptEngineSwitcherPool.cs" />
     <Compile Include="IJsPool.cs" />
-    <Compile Include="JsEngineExtensions.cs" />
     <Compile Include="JsEngineWithOwnThread.cs" />
-    <Compile Include="JsPool.cs" />
-    <Compile Include="JsPoolConfig.cs" />
+    <Compile Include="JavaScriptEngineSwitcherPool.cs" />
+    <Compile Include="JavaScriptEngineSwitcherPoolConfig.cs" />
     <Compile Include="Exceptions\JsPoolExhaustedException.cs" />
+    <Compile Include="JsPoolConfig.cs" />
+    <Compile Include="JsPool.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

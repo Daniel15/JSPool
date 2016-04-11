@@ -1,12 +1,11 @@
 ﻿/*
- * Copyright (c) 2014 Daniel Lo Nigro (Daniel15)
+ * Copyright (c) 2014-2016 Daniel Lo Nigro (Daniel15)
  * 
  * This source code is licensed under the BSD-style license found in the 
  * LICENSE file in the root directory of this source tree. 
  */
 
 using System;
-using JavaScriptEngineSwitcher.Core;
 using JSPool.Exceptions;
 
 namespace JSPool
@@ -14,7 +13,7 @@ namespace JSPool
 	/// <summary>
 	/// Handles acquiring JavaScript engines from a shared pool. This class is thread safe.
 	/// </summary>
-	public interface IJsPool : IDisposable
+	public interface IJsPool<T> : IDisposable
 	{
 		/// <summary>
 		/// Gets an engine from the pool. This engine should be returned to the pool via
@@ -32,13 +31,13 @@ namespace JSPool
 		/// <exception cref="JsPoolExhaustedException">
 		/// Thrown if no engines are available in the pool within the provided timeout period.
 		/// </exception>
-		IJsEngine GetEngine(TimeSpan? timeout = null);
+		T GetEngine(TimeSpan? timeout = null);
 
 		/// <summary>
 		/// Returns an engine to the pool so it can be reused
 		/// </summary>
 		/// <param name="engine">Engine to return</param>
-		void ReturnEngineToPool(IJsEngine engine);
+		void ReturnEngineToPool(T engine);
 
 		/// <summary>
 		/// Gets the total number of engines in this engine pool, including engines that are
@@ -58,7 +57,7 @@ namespace JSPool
 		/// <param name="repopulateEngines">
 		/// If <c>true</c>, a new engine will be created to replace the disposed engine
 		/// </param>
-		void DisposeEngine(IJsEngine engine, bool repopulateEngines = true);
+		void DisposeEngine(T engine, bool repopulateEngines = true);
 
 		/// <summary>
 		/// Disposes all engines in this pool, and creates new engines in their place.
