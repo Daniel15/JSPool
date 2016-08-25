@@ -13,7 +13,8 @@ using JavaScriptEngineSwitcher.Core;
 namespace JSPool
 {
 	/// <summary>
-	/// Handles acquiring JavaScript engines from a shared pool. This class is thread-safe.
+	/// Handles acquiring JavaScript engines from a shared pool, using JavaScriptEngineSwitcher. 
+	/// This class is thread-safe.
 	/// </summary>
 	[DebuggerDisplay("{DebuggerDisplay,nq}")]
 	public class JsPool : JsPool<IJsEngine>

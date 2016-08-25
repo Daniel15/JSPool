@@ -6,6 +6,7 @@
  */
 
 using System.Web;
+using JSPool.ClearScript;
 
 namespace JSPool.Example.Web
 {
@@ -15,7 +16,8 @@ namespace JSPool.Example.Web
 		{
 			// Ideally this would use an IoC container, but I'm just using HttpApplicationState
 			// to keep the example simple.
-			HttpContext.Current.Application["jspool"] = new JsPool(new JsPoolConfig
+			//HttpContext.Current.Application["jspool"] = new JsPool(new JsPoolConfig
+			HttpContext.Current.Application["jspool"] = new ClearScriptPool(new ClearScriptPoolConfig
 			{
 				Initializer = engine =>
 				{
