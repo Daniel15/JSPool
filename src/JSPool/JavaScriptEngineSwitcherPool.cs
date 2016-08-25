@@ -16,7 +16,7 @@ namespace JSPool
 	/// Handles acquiring JavaScript engines from a shared pool. This class is thread-safe.
 	/// </summary>
 	[DebuggerDisplay("{DebuggerDisplay,nq}")]
-	public class JsPool : JsPool<IJsEngine>
+	public class JsPool : JsPool<IJsEngine>, IJsPool
 	{
 		private const string MSIE_TYPE = "MsieJsEngine";
 		private const string V8_TYPE = "V8JsEngine";
