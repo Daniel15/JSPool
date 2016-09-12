@@ -6,6 +6,8 @@
  */
 
 using System.Web;
+using JavaScriptEngineSwitcher.Core;
+using JavaScriptEngineSwitcher.V8;
 
 namespace JSPool.Example.Web
 {
@@ -13,6 +15,10 @@ namespace JSPool.Example.Web
 	{
 		public static void Initialize()
 		{
+			// Configure JavaScriptEngineSwitcher
+			JsEngineSwitcher.Instance.EngineFactories.AddV8();
+			JsEngineSwitcher.Instance.DefaultEngineName = V8JsEngine.EngineName;
+
 			// Ideally this would use an IoC container, but I'm just using HttpApplicationState
 			// to keep the example simple.
 			HttpContext.Current.Application["jspool"] = new JsPool(new JsPoolConfig

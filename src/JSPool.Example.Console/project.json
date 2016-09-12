@@ -1,19 +1,19 @@
-﻿{
+{
   "version": "1.0.0-*",
   "buildOptions": {
     "emitEntryPoint": true
   },
 
   "dependencies": {
-    "JavaScriptEngineSwitcher.Msie": "1.5.4",
+    "JavaScriptEngineSwitcher.Core": "2.0.0-alpha1",
+    "JavaScriptEngineSwitcher.V8": "2.0.0-alpha1",
     "JSPool": {
       "target": "project"
-    },
-    "MsieJavaScriptEngine": "1.7.2"
+    }
   },
 
   "frameworks": {
-    "net40": {
+    "net40-client": {
     }
   }
 }

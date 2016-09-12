@@ -6,6 +6,8 @@
  */
 
 using System;
+using JavaScriptEngineSwitcher.Core;
+using JavaScriptEngineSwitcher.V8;
 
 namespace JSPool.Example.ConsoleApp
 {
@@ -13,6 +15,10 @@ namespace JSPool.Example.ConsoleApp
 	{
 		static void Main(string[] args)
 		{
+			// Configure JavaScriptEngineSwitcher
+			JsEngineSwitcher.Instance.EngineFactories.AddV8();
+			JsEngineSwitcher.Instance.DefaultEngineName = V8JsEngine.EngineName;
+
 			var pool = new JsPool(new JsPoolConfig
 			{
 				Initializer = initEngine =>
