@@ -49,11 +49,11 @@ namespace JSPool.Tests
 				thread.Start();
 			}
 
-			threads[0].Join(10000);
+			threads[0].Join();
 			for (var i = 1; i < threads.Count; ++i)
 			{
 				Thread thread = threads[i];
-				thread.Join(100);
+				thread.Join();
 			}
 
 			Assert.AreEqual(0, pool.EngineCount);

@@ -11,15 +11,14 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Misc", "Misc", "{8C26BA25-F911-4632-883E-838CFA5220FC}"
 	ProjectSection(SolutionItems) = preProject
 		..\.gitignore = ..\.gitignore
-		..\build.proj = ..\build.proj
-		..\dev-build.bat = ..\dev-build.bat
 		..\LICENSE = ..\LICENSE
 		..\README.md = ..\README.md
-		..\release-build-push.bat = ..\release-build-push.bat
-		..\release-build.bat = ..\release-build.bat
 	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "JSPool.Example.Web", "JSPool.Example.Web\JSPool.Example.Web.csproj", "{9B7976EC-462F-4287-B545-C34D1601BB17}"
+	ProjectSection(ProjectDependencies) = postProject
+		{1FCDC650-03B8-49B0-938C-A06C4E06C50B} = {1FCDC650-03B8-49B0-938C-A06C4E06C50B}
+	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Examples", "Examples", "{D1BF49FA-FBDD-4AF6-A063-D191B78D399B}"
 EndProject

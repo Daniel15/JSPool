@@ -3,7 +3,8 @@
   "description": "JSPool facilitates easy integration of JavaScript scripting into a .NET application in a scalable and performant manner. It does so by creating a pool of engines that can be reused multiple times, making it easy to use JavaScript libraries that have long initialisation times without having to create a new engine every time.",
   "version": "2.0.0-*",
   "frameworks": {
-    "net40-client": {}
+    "net40-client": {},
+    "net451": {}
   },
   "packOptions": {
     "licenseUrl": "https://github.com/Daniel15/JSPool/blob/master/LICENSE",

@@ -3,6 +3,7 @@
 
 # Specific to this project
 src/SharedAssemblyVersionInfo.cs
+project.lock.json
 
 # User-specific files
 *.suo

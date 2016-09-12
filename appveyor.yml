@@ -1,0 +1,9 @@
+version: '{build}'
+image: Visual Studio 2015
+build_script:
+- ps: .\dev-build.ps1
+artifacts:
+- path: output\*.nupkg
+
+# AppVeyor doesn't have native support for .NET Core tests yet
+test: off
