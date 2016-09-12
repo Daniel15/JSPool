@@ -6,14 +6,18 @@
  */
 
 using System;
+#if !NETSTANDARD1_3
 using System.Runtime.Serialization;
+#endif
 
 namespace JSPool.Exceptions
 {
 	/// <summary>
 	/// Thrown when no engines are available in the pool.
 	/// </summary>
+#if !NETSTANDARD1_3
 	[Serializable]
+#endif
 	public class JsPoolExhaustedException : Exception
 	{
 		/// <summary>
@@ -33,11 +37,13 @@ namespace JSPool.Exceptions
 		public JsPoolExhaustedException(string message, Exception innerException)
 			: base(message, innerException) { }
 
+#if !NETSTANDARD1_3
 		/// <summary>
 		/// Used by deserialization
 		/// </summary>
 		protected JsPoolExhaustedException(SerializationInfo info, StreamingContext context)
 			: base(info, context)
 		{ }
+#endif
 	}
 }

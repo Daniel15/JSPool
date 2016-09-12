@@ -76,7 +76,7 @@ namespace JSPool
 				throw new InvalidOperationException("Path must be set first");
 			}
 
-			_timer = new Timer(OnTimer);
+			_timer = new Timer(OnTimer, null, Timeout.Infinite, Timeout.Infinite);
 			try
 			{
 				// Attempt to initialise a FileSystemWatcher so we can recycle the JavaScript

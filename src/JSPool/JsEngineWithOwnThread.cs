@@ -88,7 +88,12 @@ namespace JSPool
 			// Cancellation token handles shutting down both when the whole pool is being shut down, and also
 			// when just this engine is being disposed.
 			_cancellationToken = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken, _disposedCancellation.Token).Token;
+
+#if NETSTANDARD1_3
+			_thread = new Thread(RunThread)
+#else
 			_thread = new Thread(RunThread, THREAD_STACK_SIZE)
+#endif
 			{
 				Name = "JSPool Worker", 
 				IsBackground = true,

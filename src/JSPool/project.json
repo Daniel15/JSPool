@@ -4,7 +4,16 @@
   "version": "2.0.0-alpha1-*",
   "frameworks": {
     "net40-client": {},
-    "net451": {}
+    "net451": {},
+    "netstandard13": {
+      "dependencies": {
+        "NETStandard.Library": "1.6.0",
+        "System.Diagnostics.TraceSource": "4.0.0",
+        "System.IO.FileSystem.Watcher": "4.0.0",
+        "System.Reflection.TypeExtensions": "4.1.0",
+        "System.Threading.Thread": "4.0.0"
+      }
+    }
   },
   "packOptions": {
     "licenseUrl": "https://github.com/Daniel15/JSPool/blob/master/LICENSE",

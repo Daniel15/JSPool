@@ -7,7 +7,12 @@
 
 using System;
 using JavaScriptEngineSwitcher.Core;
+
+#if NETCOREAPP1_0
+using JavaScriptEngineSwitcher.ChakraCore;
+#else
 using JavaScriptEngineSwitcher.V8;
+#endif
 
 namespace JSPool.Example.ConsoleApp
 {
@@ -15,9 +20,15 @@ namespace JSPool.Example.ConsoleApp
 	{
 		static void Main(string[] args)
 		{
-			// Configure JavaScriptEngineSwitcher
+			// Configure JavaScriptEngineSwitcher. Generally V8 is preferred, however
+			// it's currently not supported on .NET Core.
+#if NETCOREAPP1_0
+			JsEngineSwitcher.Instance.EngineFactories.AddChakraCore();
+			JsEngineSwitcher.Instance.DefaultEngineName = ChakraCoreJsEngine.EngineName;
+#else
 			JsEngineSwitcher.Instance.EngineFactories.AddV8();
 			JsEngineSwitcher.Instance.DefaultEngineName = V8JsEngine.EngineName;
+#endif
 
 			var pool = new JsPool(new JsPoolConfig
 			{
