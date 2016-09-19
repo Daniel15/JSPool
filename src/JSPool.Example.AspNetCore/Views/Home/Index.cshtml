@@ -1,0 +1,16 @@
+﻿@model JSPool.Example.AspNetCore.Models.HomeViewModel
+
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Hello World</title>
+</head>
+<body>
+	<h1>JSPool Example</h1>
+	<p>Engines available: @Model.AvailableEngineCount / @Model.EngineCount</p>
+	<p>
+		<a href="@Url.Action("HelloWorld")">Run some code</a> |
+		<a href="@Url.Action("Loop")">Imitate a slow operation (10 seconds)</a>
+	</p>
+</body>
+</html>
