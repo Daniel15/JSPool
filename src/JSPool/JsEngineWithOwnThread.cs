@@ -378,6 +378,19 @@ namespace JSPool
 		{
 			RunOnThread(engine => engine.EmbedHostObject(itemName, value));
 		}
+
+		/// <summary>
+		/// Collects the garbage.
+		/// </summary>
+		public void CollectGarbage()
+		{
+			RunOnThread(engine => engine.CollectGarbage());
+		}
+
+		/// <summary>
+		/// Determines if this engine supports garbage collection.
+		/// </summary>
+		public bool SupportsGarbageCollection => _innerEngine.SupportsGarbageCollection;
 		#endregion
 	}
 }

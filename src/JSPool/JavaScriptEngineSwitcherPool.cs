@@ -7,7 +7,6 @@
 
 using System;
 using System.Diagnostics;
-using System.Reflection;
 using JavaScriptEngineSwitcher.Core;
 
 namespace JSPool
@@ -19,7 +18,6 @@ namespace JSPool
 	public class JsPool : JsPool<IJsEngine>, IJsPool
 	{
 		private const string MSIE_TYPE = "MsieJsEngine";
-		private const string V8_TYPE = "V8JsEngine";
 
 		/// <summary>
 		/// Creates a new JavaScript engine pool
@@ -64,36 +62,16 @@ namespace JSPool
 			return engine.GetType().Name == MSIE_TYPE;
 		}
 
-		#region V8 Garbage Collection implementation
-		private static FieldInfo _innerEngineField;
-		private static MethodInfo _collectGarbageMethod;
 		/// <summary>
 		/// Runs garbage collection for the specified engine
 		/// </summary>
 		/// <param name="engine"></param>
 		protected override void CollectGarbage(IJsEngine engine)
 		{
-			if (engine.GetType().Name != V8_TYPE)
+			if (engine.SupportsGarbageCollection)
 			{
-				return;
+				engine.CollectGarbage();
 			}
-
-			// Since JavaScriptEngineSwitcher does not expose the inner JavaScript engine, we need
-			// to use reflection to get to it.
-			if (_innerEngineField == null)
-			{
-				_innerEngineField = engine.GetType().GetField("_jsEngine", BindingFlags.NonPublic | BindingFlags.Instance);
-			}
-			var innerJsEngine = _innerEngineField.GetValue(engine);
-
-			// Use reflection to get the garbage collection method so we don't have a hard 
-			// dependency on ClearScript. Not ideal but this will do for now.
-			if (_collectGarbageMethod == null)
-			{
-				_collectGarbageMethod = innerJsEngine.GetType().GetMethod("CollectGarbage");
-			}
-			_collectGarbageMethod.Invoke(innerJsEngine, new object[] { true });
 		}
-		#endregion
 	}
 }

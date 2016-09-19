@@ -5,7 +5,7 @@
   },
 
   "dependencies": {
-    "JavaScriptEngineSwitcher.Core": "2.0.0-alpha1",
+    "JavaScriptEngineSwitcher.Core": "2.0.0-beta1",
     "JSPool": {
       "target": "project"
     }
@@ -14,12 +14,12 @@
   "frameworks": {
     "net40-client": {
       "dependencies": {
-        "JavaScriptEngineSwitcher.V8": "2.0.0-alpha1"
+        "JavaScriptEngineSwitcher.V8": "2.0.0-beta1"
       }
     },
     "netcoreapp1.0": {
       "dependencies": {
-        "JavaScriptEngineSwitcher.ChakraCore": "2.0.0-alpha1",
+        "JavaScriptEngineSwitcher.ChakraCore": "2.0.0-beta1",
         "Microsoft.NETCore.App": {
           "type": "platform",
           "version": "1.0.0"
