@@ -20,6 +20,11 @@ namespace JSPool
 	public class FileWatcher : IFileWatcher, IDisposable
 	{
 		/// <summary>
+		/// Default value for <see cref="DebounceTimeout"/>.
+		/// </summary>
+		public static int DEFAULT_DEBOUNCE_TIMEOUT = 200;
+
+		/// <summary>
 		/// FileSystemWatcher that handles actually watching the path.
 		/// </summary>
 		protected FileSystemWatcher _watcher;
@@ -31,15 +36,18 @@ namespace JSPool
 		/// Timer for debouncing changes.
 		/// </summary>
 		protected Timer _timer;
-		/// <summary>
-		/// Time period to debounce file system changed events, in milliseconds.
-		/// </summary>
-		protected const int DEBOUNCE_TIMEOUT = 25;
 
 		/// <summary>
 		/// Occurs when any watched files have changed (including renames and deletions).
 		/// </summary>
 		public event EventHandler Changed;
+
+		/// <summary>
+		/// Gets or sets the time period to debounce file system changed events, in milliseconds.
+		/// This is useful to handle when multiple file change events happen in a short period of
+		/// time. JsPool will not reload/recycle the engines until this period elapses.
+		/// </summary>
+		public int DebounceTimeout { get; set; } = DEFAULT_DEBOUNCE_TIMEOUT;
 
 		/// <summary>
 		/// Gets or sets the path to watch.
@@ -134,7 +142,7 @@ namespace JSPool
 			
 			Trace.WriteLine(string.Format("[JSPool] Watched file '{0}' changed", args.FullPath));
 			// Use a timer so multiple changes only result in a single reset.
-			_timer.Change(DEBOUNCE_TIMEOUT, Timeout.Infinite);
+			_timer.Change(DebounceTimeout, Timeout.Infinite);
 			
 		}
 

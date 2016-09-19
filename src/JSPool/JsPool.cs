@@ -86,6 +86,7 @@ namespace JSPool
 			{
 				_fileWatcher = new FileWatcher
 				{
+					DebounceTimeout = _config.DebounceTimeout,
 					Path = _config.WatchPath,
 					Files = _config.WatchFiles,
 				};

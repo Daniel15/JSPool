@@ -73,10 +73,18 @@ namespace JSPool
 		public IEnumerable<string> WatchFiles { get; set; }
 
 		/// <summary>
+		/// Gets or sets the time period to debounce file system changed events, in milliseconds.
+		/// This is useful to handle when multiple file change events happen in a short period of
+		/// time. JsPool will not reload/recycle the engines until this period elapses.
+		/// </summary>
+		public int DebounceTimeout { get; set; }
+
+		/// <summary>
 		/// Creates a new JavaScript pool configuration. Default values will be set automatically.
 		/// </summary>
 		public JsPoolConfig()
 		{
+			DebounceTimeout = FileWatcher.DEFAULT_DEBOUNCE_TIMEOUT;
 			StartEngines = 10;
 			MaxEngines = 25;
 			MaxUsagesPerEngine = 100;
