@@ -15,6 +15,10 @@
       }
     }
   },
+  "buildOptions": {
+    "keyFile": "../key.snk",
+    "xmlDoc": true
+  },
   "packOptions": {
     "licenseUrl": "https://github.com/Daniel15/JSPool/blob/master/LICENSE",
     "projectUrl": "http://dan.cx/projects/jspool",
