@@ -1,7 +1,7 @@
 {
   "copyright": "Daniel Lo Nigro",
   "description": "JSPool facilitates easy integration of JavaScript scripting into a .NET application in a scalable and performant manner. It does so by creating a pool of engines that can be reused multiple times, making it easy to use JavaScript libraries that have long initialisation times without having to create a new engine every time.",
-  "version": "2.0.0-beta1-*",
+  "version": "2.0.0-*",
   "frameworks": {
     "net40-client": {},
     "net451": {},
@@ -25,6 +25,6 @@
     "tags": [ "javascript", "js", "javascriptengineswitcher", "msiejavascriptengine", "v8", "clearscript" ]
   },
   "dependencies": {
-    "JavaScriptEngineSwitcher.Core": "2.0.0-beta1"
+    "JavaScriptEngineSwitcher.Core": "2.0.0"
   }
 }
