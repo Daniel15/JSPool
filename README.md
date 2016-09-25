@@ -96,9 +96,9 @@ The following configuration settings are available for JSPool:
 
 Changelog
 =========
-2.0 Beta 1 - 18th September 2016
+2.0 - 25th September 2016
 --------------------------------
- - [#17](https://github.com/Daniel15/JSPool/issues/17) - Upgrade to JavaScriptEngineSwitcher 2.0 Beta 1
+ - [#17](https://github.com/Daniel15/JSPool/issues/17) - Upgrade to JavaScriptEngineSwitcher 2.0
  - [#16](https://github.com/Daniel15/JSPool/issues/16) - Add support for .NET Core
  - [#10](https://github.com/Daniel15/JSPool/issues/10) - Add `DebounceTimeout` configuration option for specifying the number of milliseconds to wait after a file is changed before recycling the JavaScript engines.
 
