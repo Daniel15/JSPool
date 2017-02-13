@@ -5,7 +5,7 @@
   },
 
   "dependencies": {
-    "JavaScriptEngineSwitcher.Core": "2.0.0",
+    "JavaScriptEngineSwitcher.Core": "2.2.0",
     "JSPool": {
       "target": "project"
     }
@@ -14,7 +14,7 @@
   "frameworks": {
     "net40-client": {
       "dependencies": {
-        "JavaScriptEngineSwitcher.V8": "2.0.0"
+        "JavaScriptEngineSwitcher.V8": "2.2.0"
       }
     },
     "netcoreapp1.0": {
