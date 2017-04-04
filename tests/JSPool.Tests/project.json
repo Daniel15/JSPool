@@ -8,6 +8,9 @@
     "Moq": "4.5.21",
     "NUnit": "3.4.1"
   },
+  "buildOptions": {
+    "debugType": "portable"
+  },
   "frameworks": {
     "net451": {}
   },
