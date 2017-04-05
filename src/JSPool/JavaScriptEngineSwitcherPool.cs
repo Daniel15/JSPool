@@ -17,8 +17,6 @@ namespace JSPool
 	[DebuggerDisplay("{DebuggerDisplay,nq}")]
 	public class JsPool : JsPool<IJsEngine>, IJsPool
 	{
-		private const string MSIE_TYPE = "MsieJsEngine";
-
 		/// <summary>
 		/// Creates a new JavaScript engine pool
 		/// </summary>
@@ -57,9 +55,7 @@ namespace JSPool
 		/// <returns><c>true</c> if the engine should be confined to a single thread</returns>
 		private static bool NeedsOwnThread(IJsEngine engine)
 		{
-			// Checking MsieJsEngine as a string so we don't need to pull in an otherwise
-			// unneeded dependency on MsieJsEngine.
-			return engine.GetType().Name == MSIE_TYPE;
+			return false;
 		}
 
 		/// <summary>
