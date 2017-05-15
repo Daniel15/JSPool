@@ -32,27 +32,25 @@ namespace JSPool.Example.Web.Controllers
 	    public ActionResult HelloWorld()
 	    {
 		    var pool = GetJsPool();
-			var engine = pool.GetEngine();
-			// This function is created in JsPoolInitializer.cs
-		    var result = engine.CallFunction<string>("helloWorld");
-			// Always release an engine when you're done with it.
-			pool.ReturnEngineToPool(engine);
-
-		    return Content(result);
+		    using (var engine = pool.GetEngine())
+		    {
+				// This function is created in JsPoolInitializer.cs
+				var result = engine.CallFunction<string>("helloWorld");
+				return Content(result);
+			}
 	    }
 
 	    public ActionResult Loop()
 	    {
 		    var pool = GetJsPool();
-		    var engine = pool.GetEngine();
-			engine.Execute(@"
-				var timeToEnd = Date.now() + 10000;
-				while (Date.now() < timeToEnd) { }
-			");
-			// Always release an engine when you're done with it.
-			pool.ReturnEngineToPool(engine);
-
-		    return Content("Done " + DateTime.Now);
+		    using (var engine = pool.GetEngine())
+		    {
+				engine.Execute(@"
+					var timeToEnd = Date.now() + 10000;
+					while (Date.now() < timeToEnd) { }
+				");
+				return Content("Done " + DateTime.Now);
+			}
 	    }
 	}
 }

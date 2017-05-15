@@ -31,8 +31,8 @@ namespace JSPool.Tests
 			{
 				for (var i = 0; i < 10000; ++i)
 				{
-					IJsEngine engine = pool.GetEngine();
-					pool.ReturnEngineToPool(engine);
+					var engine = pool.GetEngine();
+					engine.Dispose();
 				}
 			};
 

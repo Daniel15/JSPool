@@ -17,25 +17,27 @@ namespace JSPool
 	/// <summary>
 	/// Handles acquiring JavaScript engines from a shared pool. This class is thread-safe.
 	/// </summary>
+	/// <typeparam name="TOriginal">Type of class contained within the pool</typeparam>
+	/// /// <typeparam name="TPooled">Type of <see cref="PooledObject{T}"/> that wraps the <typeparamref name="TOriginal"/></typeparam>
 	[DebuggerDisplay("{DebuggerDisplay,nq}")]
-	public class JsPool<T> : IJsPool<T>
+	public class JsPool<TPooled, TOriginal> : IJsPool<TPooled> where TPooled : PooledObject<TOriginal>, new()
 	{
 		/// <summary>
 		/// Configuration for this engine pool.
 		/// </summary>
-		protected readonly JsPoolConfig<T> _config;
+		protected readonly JsPoolConfig<TOriginal> _config;
 		/// <summary>
 		/// Engines that are currently available for use.
 		/// </summary>
-		protected readonly BlockingCollection<T> _availableEngines = new BlockingCollection<T>();
+		protected readonly BlockingCollection<TPooled> _availableEngines = new BlockingCollection<TPooled>();
 		/// <summary>
 		/// Metadata for the engines. Total number of engines that have been created is reflected in its Count.
 		/// </summary>
-		protected readonly IDictionary<T, EngineMetadata> _metadata = new ConcurrentDictionary<T, EngineMetadata>();
+		protected readonly IDictionary<TPooled, EngineMetadata> _metadata = new ConcurrentDictionary<TPooled, EngineMetadata>();
 		/// <summary>
 		/// Factory method used to create engines.
 		/// </summary>
-		protected readonly Func<T> _engineFactory;
+		protected readonly Func<TOriginal> _engineFactory;
 		/// <summary>
 		/// Handles watching for changes to files, to recycle the engines if any related files change.
 		/// </summary>
@@ -61,7 +63,7 @@ namespace JSPool
 		/// <param name="config">
 		/// The configuration to use. If not provided, a default configuration will be used.
 		/// </param>
-		public JsPool(JsPoolConfig<T> config)
+		public JsPool(JsPoolConfig<TOriginal> config)
 		{
 			_config = config;
 			_engineFactory = CreateEngineFactory();
@@ -72,7 +74,7 @@ namespace JSPool
 		/// <summary>
 		/// Gets a factory method used to create engines.
 		/// </summary>
-		protected virtual Func<T> CreateEngineFactory()
+		protected virtual Func<TOriginal> CreateEngineFactory()
 		{
 			return _config.EngineFactory;
 		}
@@ -110,17 +112,21 @@ namespace JSPool
 		/// <summary>
 		/// Creates a new JavaScript engine and adds it to the list of all available engines.
 		/// </summary>
-		protected virtual T CreateEngine()
+		protected virtual TPooled CreateEngine()
 		{
-			var engine = _engineFactory();
-			_config.Initializer(engine);
+			var engine = new TPooled
+			{
+				InnerEngine = _engineFactory(),
+			};
+			engine.ReturnEngineToPool = () => ReturnEngineToPoolInternal(engine);
+			_config.Initializer(engine.InnerEngine);
 			_metadata[engine] = new EngineMetadata();
 			return engine;
 		}
 
 		/// <summary>
-		/// Gets an engine from the pool. This engine should be returned to the pool via
-		/// <see cref="ReturnEngineToPool"/> when you are finished with it.
+		/// Gets an engine from the pool. This engine should be disposed when you are finished with it -
+		/// disposing the engine returns it to the pool.
 		/// If an engine is free, this method returns immediately with the engine.
 		/// If no engines are available but we have not reached <see cref="JsPoolConfig{T}.MaxEngines"/>
 		/// yet, creates a new engine. If MaxEngines has been reached, blocks until an engine is
@@ -134,9 +140,9 @@ namespace JSPool
 		/// <exception cref="JsPoolExhaustedException">
 		/// Thrown if no engines are available in the pool within the provided timeout period.
 		/// </exception>
-		public virtual T GetEngine(TimeSpan? timeout = null)
+		public virtual TPooled GetEngine(TimeSpan? timeout = null)
 		{
-			T engine;
+			TPooled engine;
 
 			// First see if a pooled engine is immediately available
 			if (_availableEngines.TryTake(out engine))
@@ -171,7 +177,7 @@ namespace JSPool
 		/// Marks the specified engine as "in use"
 		/// </summary>
 		/// <param name="engine"></param>
-		private T TakeEngine(T engine)
+		private TPooled TakeEngine(TPooled engine)
 		{
 			var metadata = _metadata[engine];
 			metadata.InUse = true;
@@ -183,7 +189,17 @@ namespace JSPool
 		/// Returns an engine to the pool so it can be reused
 		/// </summary>
 		/// <param name="engine">Engine to return</param>
-		public virtual void ReturnEngineToPool(T engine)
+		[Obsolete("Disposing the engine will now return it to the pool. Prefer disposing the engine to explicitly calling ReturnEngineToPool.")]
+		public virtual void ReturnEngineToPool(TPooled engine)
+		{
+			ReturnEngineToPoolInternal(engine);
+		}
+
+		/// <summary>
+		/// Returns an engine to the pool so it can be reused
+		/// </summary>
+		/// <param name="engine">Engine to return</param>
+		protected virtual void ReturnEngineToPoolInternal(TPooled engine)
 		{
 			EngineMetadata metadata;
 			if (!_metadata.TryGetValue(engine, out metadata))
@@ -191,9 +207,9 @@ namespace JSPool
 				// This engine was from another pool. This could happen if a pool is recycled
 				// and replaced with a different one (like what ReactJS.NET does when any 
 				// loaded files change). Let's just pretend we never saw it.
-				if (engine is IDisposable)
+				if (engine.InnerEngine is IDisposable)
 				{
-					((IDisposable)engine).Dispose();
+					((IDisposable)engine.InnerEngine).Dispose();
 				}
 				return;
 			}
@@ -212,7 +228,7 @@ namespace JSPool
 				metadata.UsageCount % _config.GarbageCollectionInterval == 0
 			)
 			{
-				CollectGarbage(engine);
+				CollectGarbage(engine.InnerEngine);
 			}
 
 			_availableEngines.Add(engine);
@@ -225,11 +241,11 @@ namespace JSPool
 		/// <param name="repopulateEngines">
 		/// If <c>true</c>, a new engine will be created to replace the disposed engine
 		/// </param>
-		public virtual void DisposeEngine(T engine, bool repopulateEngines = true)
+		public virtual void DisposeEngine(TPooled engine, bool repopulateEngines = true)
 		{
-			if (engine is IDisposable)
+			if (engine.InnerEngine is IDisposable)
 			{
-				((IDisposable)engine).Dispose();
+				((IDisposable)engine.InnerEngine).Dispose();
 			}
 			_metadata.Remove(engine);
 
@@ -247,7 +263,7 @@ namespace JSPool
 		/// </summary>
 		protected virtual void DisposeAllEngines()
 		{
-			T engine;
+			TPooled engine;
 			while (_availableEngines.TryTake(out engine))
 			{
 				DisposeEngine(engine, repopulateEngines: false);
@@ -262,10 +278,7 @@ namespace JSPool
 		/// </summary>
 		public virtual void Recycle()
 		{
-			if (Recycled != null)
-			{
-				Recycled(this, null);
-			}
+			Recycled?.Invoke(this, null);
 
 			DisposeAllEngines();
 			PopulateEngines();
@@ -278,17 +291,14 @@ namespace JSPool
 		{
 			DisposeAllEngines();
 			_cancellationTokenSource.Cancel();
-			if (_fileWatcher != null)
-			{
-				_fileWatcher.Dispose();
-			}
+			_fileWatcher?.Dispose();
 		}
 		
 		/// <summary>
 		/// Runs garbage collection for the specified engine
 		/// </summary>
 		/// <param name="engine"></param>
-		protected virtual void CollectGarbage(T engine)
+		protected virtual void CollectGarbage(TOriginal engine)
 		{
 			// No-op by default
 		}
@@ -298,35 +308,17 @@ namespace JSPool
 		/// Gets the total number of engines in this engine pool, including engines that are
 		/// currently busy.
 		/// </summary>
-		public virtual int EngineCount
-		{
-			get { return _metadata.Count; }
-		}
+		public virtual int EngineCount => _metadata.Count;
 
 		/// <summary>
 		/// Gets the number of currently available engines in this engine pool.
 		/// </summary>
-		public virtual int AvailableEngineCount
-		{
-			get { return _availableEngines.Count; }
-		}
+		public virtual int AvailableEngineCount => _availableEngines.Count;
 
-		// ReSharper disable once UnusedMember.Local
 		/// <summary>
 		/// Gets a string for displaying this engine pool in the Visual Studio debugger.
 		/// </summary>
-		private string DebuggerDisplay
-		{
-			get
-			{
-				return string.Format(
-					"Engines = {0}, Available = {1}, Max = {2}",
-					EngineCount,
-					AvailableEngineCount,
-					_config.MaxEngines
-				);
-			}
-		}
+		private string DebuggerDisplay => $"Engines = {EngineCount}, Available = {AvailableEngineCount}, Max = {_config.MaxEngines}";
 		#endregion
 	}
 }

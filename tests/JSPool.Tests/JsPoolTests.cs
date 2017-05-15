@@ -12,6 +12,9 @@ using JSPool.Exceptions;
 using Moq;
 using Xunit;
 
+// Some tests are for deprecated methods
+#pragma warning disable 618
+
 namespace JSPool.Tests
 {
 	public class JsPoolTests
@@ -55,9 +58,9 @@ namespace JSPool.Tests
 			var pool = new JsPool(config);
 			var resultEngines = new[]
 			{
-				pool.GetEngine(),
-				pool.GetEngine(),
-				pool.GetEngine(),
+				pool.GetEngine().InnerEngine,
+				pool.GetEngine().InnerEngine,
+				pool.GetEngine().InnerEngine,
 			};
 
 			Assert.Equal(engines, resultEngines);
@@ -110,7 +113,7 @@ namespace JSPool.Tests
 		}
 
 		[Fact]
-		public void ReturnEngineToPoolAddsToAvailableEngines()
+		public void LegacyReturnEngineToPoolAddsToAvailableEngines()
 		{
 			var factory = new Mock<IEngineFactoryForMock>();
 			factory.Setup(x => x.EngineFactory()).Returns(() => new Mock<IJsEngine>().Object);
@@ -126,6 +129,65 @@ namespace JSPool.Tests
 			Assert.Equal(1, pool.AvailableEngineCount);
 			pool.ReturnEngineToPool(engine);
 			Assert.Equal(2, pool.AvailableEngineCount);
+		}
+
+		[Fact]
+		public void ReturnEngineAddsToAvailableEngines()
+		{
+			var factory = new Mock<IEngineFactoryForMock>();
+			factory.Setup(x => x.EngineFactory()).Returns(() => new Mock<IJsEngine>().Object);
+			var config = new JsPoolConfig
+			{
+				StartEngines = 2,
+				EngineFactory = factory.Object.EngineFactory
+			};
+
+			var pool = new JsPool(config);
+			Assert.Equal(2, pool.AvailableEngineCount);
+			using (var engine = pool.GetEngine())
+			{
+				Assert.Equal(1, pool.AvailableEngineCount);
+			}
+			Assert.Equal(2, pool.AvailableEngineCount);
+		}
+
+		[Fact]
+		public void LegacyReturnEngineDisposesIfAtMaxUsages()
+		{
+			var mockEngine1 = new Mock<IJsEngine>();
+			var mockEngine2 = new Mock<IJsEngine>();
+			var factory = new Mock<IEngineFactoryForMock>();
+			factory.SetupSequence(x => x.EngineFactory())
+				.Returns(mockEngine1.Object)
+				.Returns(mockEngine2.Object);
+			var config = new JsPoolConfig
+			{
+				StartEngines = 1,
+				MaxUsagesPerEngine = 3,
+				EngineFactory = factory.Object.EngineFactory
+			};
+
+			var pool = new JsPool(config);
+
+			// First two usages should not recycle it
+			var engine = pool.GetEngine();
+			Assert.Equal(mockEngine1.Object, engine.InnerEngine);
+			pool.ReturnEngineToPool(engine);
+			mockEngine1.Verify(x => x.Dispose(), Times.Never);
+
+			engine = pool.GetEngine();
+			Assert.Equal(mockEngine1.Object, engine.InnerEngine);
+			pool.ReturnEngineToPool(engine);
+			mockEngine1.Verify(x => x.Dispose(), Times.Never);
+
+			// Third usage should recycle it, since the max usages is 3
+			engine = pool.GetEngine();
+			pool.ReturnEngineToPool(engine);
+			mockEngine1.Verify(x => x.Dispose());
+
+			// Next usage should get a new engine
+			engine = pool.GetEngine();
+			Assert.Equal(mockEngine2.Object, engine.InnerEngine);
 		}
 
 		[Fact]
@@ -147,24 +209,30 @@ namespace JSPool.Tests
 			var pool = new JsPool(config);
 
 			// First two usages should not recycle it
-			var engine = pool.GetEngine();
-			Assert.Equal(mockEngine1.Object, engine);
-			pool.ReturnEngineToPool(engine);
+			using (var engine = pool.GetEngine())
+			{
+				Assert.Equal(mockEngine1.Object, engine.InnerEngine);
+			}
 			mockEngine1.Verify(x => x.Dispose(), Times.Never);
 
-			engine = pool.GetEngine();
-			Assert.Equal(mockEngine1.Object, engine);
-			pool.ReturnEngineToPool(engine);
+			using (var engine = pool.GetEngine())
+			{
+				Assert.Equal(mockEngine1.Object, engine.InnerEngine);
+			}
 			mockEngine1.Verify(x => x.Dispose(), Times.Never);
 
 			// Third usage should recycle it, since the max usages is 3
-			engine = pool.GetEngine();
-			pool.ReturnEngineToPool(engine);
+			using (var engine = pool.GetEngine())
+			{
+				Assert.Equal(mockEngine1.Object, engine.InnerEngine);
+			}
 			mockEngine1.Verify(x => x.Dispose());
 
 			// Next usage should get a new engine
-			engine = pool.GetEngine();
-			Assert.Equal(mockEngine2.Object, engine);
+			using (var engine = pool.GetEngine())
+			{
+				Assert.Equal(mockEngine2.Object, engine.InnerEngine);
+			}
 		}
 
 		[Fact]
@@ -206,14 +274,15 @@ namespace JSPool.Tests
 				StartEngines = 1,
 				EngineFactory = factory.Object.EngineFactory
 			};
-			var rogueEngine = new Mock<IJsEngine>();
+			var rogueEngine = new Mock<PooledJsEngine>();
+			rogueEngine.Setup(x => x.InnerEngine.Dispose());
 
 			var pool = new JsPool(config);
 			pool.ReturnEngineToPool(rogueEngine.Object);
 
 			Assert.Equal(1, pool.AvailableEngineCount);
 			Assert.Equal(1, pool.EngineCount);
-			rogueEngine.Verify(x => x.Dispose());
+			rogueEngine.Verify(x => x.InnerEngine.Dispose());
 		}
 
 		[Fact]

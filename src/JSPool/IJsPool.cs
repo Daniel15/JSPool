@@ -16,8 +16,8 @@ namespace JSPool
 	public interface IJsPool<T> : IDisposable
 	{
 		/// <summary>
-		/// Gets an engine from the pool. This engine should be returned to the pool via
-		/// <see cref="JsPool{T}.ReturnEngineToPool"/> when you are finished with it.
+		/// Gets an engine from the pool. This engine should be disposed when you are finished with it -
+		/// disposing the engine returns it to the pool.
 		/// If an engine is free, this method returns immediately with the engine.
 		/// If no engines are available but we have not reached <see cref="JsPoolConfig{T}.MaxEngines"/>
 		/// yet, creates a new engine. If MaxEngines has been reached, blocks until an engine is
@@ -37,6 +37,7 @@ namespace JSPool
 		/// Returns an engine to the pool so it can be reused
 		/// </summary>
 		/// <param name="engine">Engine to return</param>
+		[Obsolete("Disposing the engine will now return it to the pool. Prefer disposing the engine to explicitly calling ReturnEngineToPool.")]
 		void ReturnEngineToPool(T engine);
 
 		/// <summary>

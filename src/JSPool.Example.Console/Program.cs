@@ -45,13 +45,13 @@ namespace JSPool.Example.ConsoleApp
 			});
 
 			// Get an engine from the pool
-			var engine = pool.GetEngine();
-			var message = engine.CallFunction<string>("sayHello", "Daniel");
-			Console.WriteLine(message); // "Hello Daniel!"
+			// Disposing the engine will return it to the pool - The using() block will do that for us!
+			using (var engine = pool.GetEngine())
+			{
+				var message = engine.CallFunction<string>("sayHello", "Daniel");
+				Console.WriteLine(message); // "Hello Daniel!"				
+			}
 			Console.ReadKey();
-
-			// Always release an engine when you're done with it.
-			pool.ReturnEngineToPool(engine);
 
 			// Disposing the pool will also dispose all its engines. Always dispose it when
 			// it is no longer required.

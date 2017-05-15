@@ -5,14 +5,12 @@
  * LICENSE file in the root directory of this source tree. 
  */
 
-using JavaScriptEngineSwitcher.Core;
-
 namespace JSPool
 {
 	/// <summary>
 	/// Handles acquiring JavaScript engines from a shared pool. This class is thread safe.
 	/// </summary>
-	public interface IJsPool : IJsPool<IJsEngine>
+	public interface IJsPool : IJsPool<PooledJsEngine>
 	{
 	}
 }

@@ -58,10 +58,6 @@
       <HintPath>..\packages\JavaScriptEngineSwitcher.V8.2.2.0\lib\net45\JavaScriptEngineSwitcher.V8.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="JSPool, Version=2.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\JSPool\bin\$(Configuration)\net40-client\JSPool.dll</HintPath>
-    </Reference>
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="Microsoft.Web.Infrastructure">
       <HintPath>..\packages\Microsoft.Web.Infrastructure.1.0.0.0\lib\net40\Microsoft.Web.Infrastructure.dll</HintPath>
@@ -141,6 +137,12 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\JSPool\JSPool.csproj">
+      <Project>{1fcdc650-03b8-49b0-938c-a06c4e06c50b}</Project>
+      <Name>JSPool</Name>
+    </ProjectReference>
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
