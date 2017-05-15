@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 14
-VisualStudioVersion = 14.0.25420.1
+# Visual Studio 15
+VisualStudioVersion = 15.0.26430.4
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".nuget", ".nuget", "{5A237428-0D45-4D88-A5E4-0E232E07090F}"
 	ProjectSection(SolutionItems) = preProject
@@ -17,22 +17,22 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Misc", "Misc", "{8C26BA25-F
 		..\README.md = ..\README.md
 	EndProjectSection
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Examples", "Examples", "{D1BF49FA-FBDD-4AF6-A063-D191B78D399B}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Core", "Core", "{9A1CB8A1-7EFC-4BC1-A4D9-F036DAC3F84B}"
+EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "JSPool.Example.Web", "JSPool.Example.Web\JSPool.Example.Web.csproj", "{9B7976EC-462F-4287-B545-C34D1601BB17}"
 	ProjectSection(ProjectDependencies) = postProject
 		{1FCDC650-03B8-49B0-938C-A06C4E06C50B} = {1FCDC650-03B8-49B0-938C-A06C4E06C50B}
 	EndProjectSection
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Examples", "Examples", "{D1BF49FA-FBDD-4AF6-A063-D191B78D399B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "JSPool", "JSPool\JSPool.csproj", "{1FCDC650-03B8-49B0-938C-A06C4E06C50B}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Core", "Core", "{9A1CB8A1-7EFC-4BC1-A4D9-F036DAC3F84B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "JSPool.Tests", "..\tests\JSPool.Tests\JSPool.Tests.csproj", "{DD31FF18-0274-4A30-9983-B42A2598CA12}"
 EndProject
-Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "JSPool", "JSPool\JSPool.xproj", "{1FCDC650-03B8-49B0-938C-A06C4E06C50B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "JSPool.Example.Console", "JSPool.Example.Console\JSPool.Example.Console.csproj", "{D15F97FE-B55C-4E0F-AC7B-CBB4F80CA338}"
 EndProject
-Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "JSPool.Tests", "..\tests\JSPool.Tests\JSPool.Tests.xproj", "{DD31FF18-0274-4A30-9983-B42A2598CA12}"
-EndProject
-Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "JSPool.Example.Console", "JSPool.Example.Console\JSPool.Example.Console.xproj", "{D15F97FE-B55C-4E0F-AC7B-CBB4F80CA338}"
-EndProject
-Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "JSPool.Example.AspNetCore", "JSPool.Example.AspNetCore\JSPool.Example.AspNetCore.xproj", "{072DCD6E-1B7A-4BC2-B038-6C4CD8176D40}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "JSPool.Example.AspNetCore", "JSPool.Example.AspNetCore\JSPool.Example.AspNetCore.csproj", "{072DCD6E-1B7A-4BC2-B038-6C4CD8176D40}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

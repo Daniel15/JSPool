@@ -10,14 +10,13 @@ using System.IO;
 using JavaScriptEngineSwitcher.Core;
 using JSPool.Exceptions;
 using Moq;
-using NUnit.Framework;
+using Xunit;
 
 namespace JSPool.Tests
 {
-	[TestFixture]
 	public class JsPoolTests
 	{
-		[Test]
+		[Fact]
 		public void ConstructorCreatesEngines()
 		{
 			var factory = new Mock<IEngineFactoryForMock>();
@@ -29,12 +28,12 @@ namespace JSPool.Tests
 			};
 
 			var pool = new JsPool(config);
-			Assert.AreEqual(5, pool.AvailableEngineCount);
+			Assert.Equal(5, pool.AvailableEngineCount);
 			// 6 times because one is at the very beginning to check the engine type
 			factory.Verify(x => x.EngineFactory(), Times.Exactly(6));
 		}
 
-		[Test]
+		[Fact]
 		public void GetEngineReturnsAllAvailableEngines()
 		{
 			var engines = new[]
@@ -65,10 +64,10 @@ namespace JSPool.Tests
 				pool.GetEngine(),
 			};
 
-			CollectionAssert.AreEquivalent(engines, resultEngines);
+			Assert.Equal(engines, resultEngines);
 		}
 
-		[Test]
+		[Fact]
 		public void GetEngineCreatesNewEngineIfNotAtMaximum()
 		{
 			var factory = new Mock<IEngineFactoryForMock>();
@@ -84,16 +83,16 @@ namespace JSPool.Tests
 			factory.Verify(x => x.EngineFactory(), Times.Exactly(2));
 			pool.GetEngine(); // First engine created on init
 			factory.Verify(x => x.EngineFactory(), Times.Exactly(2));
-			Assert.AreEqual(1, pool.EngineCount);
-			Assert.AreEqual(0, pool.AvailableEngineCount);
+			Assert.Equal(1, pool.EngineCount);
+			Assert.Equal(0, pool.AvailableEngineCount);
 
 			pool.GetEngine(); // Second engine created JIT
 			factory.Verify(x => x.EngineFactory(), Times.Exactly(3));
-			Assert.AreEqual(2, pool.EngineCount);
-			Assert.AreEqual(0, pool.AvailableEngineCount);
+			Assert.Equal(2, pool.EngineCount);
+			Assert.Equal(0, pool.AvailableEngineCount);
 		}
 
-		[Test]
+		[Fact]
 		public void GetEngineFailsIfAtMaximum()
 		{
 			var factory = new Mock<IEngineFactoryForMock>();
@@ -114,7 +113,7 @@ namespace JSPool.Tests
 			);
 		}
 
-		[Test]
+		[Fact]
 		public void ReturnEngineToPoolAddsToAvailableEngines()
 		{
 			var factory = new Mock<IEngineFactoryForMock>();
@@ -126,14 +125,14 @@ namespace JSPool.Tests
 			};
 
 			var pool = new JsPool(config);
-			Assert.AreEqual(2, pool.AvailableEngineCount);
+			Assert.Equal(2, pool.AvailableEngineCount);
 			var engine = pool.GetEngine();
-			Assert.AreEqual(1, pool.AvailableEngineCount);
+			Assert.Equal(1, pool.AvailableEngineCount);
 			pool.ReturnEngineToPool(engine);
-			Assert.AreEqual(2, pool.AvailableEngineCount);
+			Assert.Equal(2, pool.AvailableEngineCount);
 		}
 
-		[Test]
+		[Fact]
 		public void ReturnEngineDisposesIfAtMaxUsages()
 		{
 			var mockEngine1 = new Mock<IJsEngine>();
@@ -155,12 +154,12 @@ namespace JSPool.Tests
 
 			// First two usages should not recycle it
 			var engine = pool.GetEngine();
-			Assert.AreEqual(mockEngine1.Object, engine);
+			Assert.Equal(mockEngine1.Object, engine);
 			pool.ReturnEngineToPool(engine);
 			mockEngine1.Verify(x => x.Dispose(), Times.Never);
 
 			engine = pool.GetEngine();
-			Assert.AreEqual(mockEngine1.Object, engine);
+			Assert.Equal(mockEngine1.Object, engine);
 			pool.ReturnEngineToPool(engine);
 			mockEngine1.Verify(x => x.Dispose(), Times.Never);
 
@@ -171,10 +170,10 @@ namespace JSPool.Tests
 
 			// Next usage should get a new engine
 			engine = pool.GetEngine();
-			Assert.AreEqual(mockEngine2.Object, engine);
+			Assert.Equal(mockEngine2.Object, engine);
 		}
 
-		[Test]
+		[Fact]
 		public void DisposeDisposesAllEngines()
 		{
 			var engines = new[]
@@ -205,7 +204,7 @@ namespace JSPool.Tests
 			}
 		}
 
-		[Test]
+		[Fact]
 		public void ShouldIgnoreReturnToPoolIfUnknownEngine()
 		{
 			var factory = new Mock<IEngineFactoryForMock>();
@@ -220,12 +219,12 @@ namespace JSPool.Tests
 			var pool = new JsPool(config);
 			pool.ReturnEngineToPool(rogueEngine.Object);
 
-			Assert.AreEqual(1, pool.AvailableEngineCount);
-			Assert.AreEqual(1, pool.EngineCount);
+			Assert.Equal(1, pool.AvailableEngineCount);
+			Assert.Equal(1, pool.EngineCount);
 			rogueEngine.Verify(x => x.Dispose());
 		}
 
-		[Test]
+		[Fact]
 		public void RecycleCreatesNewEngines()
 		{
 			var factory = new Mock<IEngineFactoryForMock>();
@@ -237,19 +236,19 @@ namespace JSPool.Tests
 			};
 
 			var pool = new JsPool(config);
-			Assert.AreEqual(2, pool.AvailableEngineCount);
+			Assert.Equal(2, pool.AvailableEngineCount);
 			// 3 times because one is at the very beginning to check the engine type
 			factory.Verify(x => x.EngineFactory(), Times.Exactly(3));
 
 			// Now recycle the pool
 			pool.Recycle();
-			Assert.AreEqual(2, pool.AvailableEngineCount);
+			Assert.Equal(2, pool.AvailableEngineCount);
 			// Two more engines should have been created
 			factory.Verify(x => x.EngineFactory(), Times.Exactly(5));
 		}
 
 
-		[Test]
+		[Fact]
 		public void RecycleFiresRecycledEvent()
 		{
 			var callCount = 0;
@@ -263,16 +262,16 @@ namespace JSPool.Tests
 
 			var pool = new JsPool(config);
 			pool.Recycled += (sender, args) => callCount++;
-			Assert.AreEqual(0, callCount);
+			Assert.Equal(0, callCount);
 
 			pool.Recycle();
-			Assert.AreEqual(1, callCount);
+			Assert.Equal(1, callCount);
 
 			pool.Recycle();
-			Assert.AreEqual(2, callCount);
+			Assert.Equal(2, callCount);
 		}
 
-		[Test]
+		[Fact]
 		public void WatchPathWithoutWatchFilesDoesNotThrow()
 		{
 			var factory = new Mock<IEngineFactoryForMock>();
@@ -283,11 +282,10 @@ namespace JSPool.Tests
 				EngineFactory = factory.Object.EngineFactory,
 				WatchPath = Directory.GetCurrentDirectory(),
 			};
-			Assert.DoesNotThrow(() =>
-			{
-				// ReSharper disable once UnusedVariable
-				var pool = new JsPool(config);
-			});
+
+			// Should not throw
+			// ReSharper disable once UnusedVariable
+			var pool = new JsPool(config);
 		}
 	}
 

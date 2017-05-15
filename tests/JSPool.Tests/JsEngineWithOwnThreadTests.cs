@@ -9,15 +9,13 @@ using System.Collections.Generic;
 using System.Threading;
 using JavaScriptEngineSwitcher.Core;
 using Moq;
-using NUnit.Framework;
-using NUnit.Framework.Constraints;
+using Xunit;
 
 namespace JSPool.Tests
 {
-	[TestFixture]
-	class JsEngineWithOwnThreadTests
+	public class JsEngineWithOwnThreadTests
 	{
-		[Test]
+		[Fact]
 		public void ExecutesCodeOnCorrectThread()
 		{
 			int? threadEngineWasCreatedOn = null;
@@ -34,21 +32,21 @@ namespace JSPool.Tests
 				.Callback(() => threadEngineWasCreatedOn = Thread.CurrentThread.ManagedThreadId);
 
 			var engine = new JsEngineWithOwnThread(factory.Object.EngineFactory, new CancellationToken());
-			Assert.AreEqual(true, engine.IsThreadAlive);
+			Assert.True(engine.IsThreadAlive);
 			// Engine was created on a different thread
-			Assert.AreNotEqual(Thread.CurrentThread.ManagedThreadId, threadEngineWasCreatedOn);
+			Assert.NotEqual(Thread.CurrentThread.ManagedThreadId, threadEngineWasCreatedOn);
 
 			engine.Execute("alert(hello)");
 			engine.Execute("alert(world)");
 			// Execute was called twice
 			innerEngine.Verify(x => x.Execute(It.IsAny<string>()), Times.Exactly(2));
 			// Both calls ran on same thread
-			Assert.AreEqual(threadsExecuteWasCalledFrom[0], threadsExecuteWasCalledFrom[1]);
+			Assert.Equal(threadsExecuteWasCalledFrom[0], threadsExecuteWasCalledFrom[1]);
 			// Both calls ran on the thread the engine was created on
-			Assert.AreEqual(threadEngineWasCreatedOn, threadsExecuteWasCalledFrom[0]);	
+			Assert.Equal(threadEngineWasCreatedOn, threadsExecuteWasCalledFrom[0]);	
 		}
 
-		[Test]
+		[Fact]
 		public void HandlesCallFunctionThatReturnsGeneric()
 		{
 			var innerEngine = new Mock<IJsEngine>();
@@ -59,10 +57,10 @@ namespace JSPool.Tests
 			var engine = new JsEngineWithOwnThread(factory.Object.EngineFactory, new CancellationToken());
 			var result = engine.CallFunction<int>("add", 40, 2);
 
-			Assert.AreEqual(42, result);
+			Assert.Equal(42, result);
 		}
 
-		[Test]
+		[Fact]
 		public void HandlesCallFunctionThatReturnsObject()
 		{
 			var innerEngine = new Mock<IJsEngine>();
@@ -73,10 +71,10 @@ namespace JSPool.Tests
 			var engine = new JsEngineWithOwnThread(factory.Object.EngineFactory, new CancellationToken());
 			var result = engine.CallFunction("hello");
 
-			Assert.AreEqual("Hello World", result);
+			Assert.Equal("Hello World", result);
 		}
 
-		[Test]
+		[Fact]
 		public void HandlesDisposal()
 		{
 			var innerEngine = new Mock<IJsEngine>();
@@ -87,7 +85,8 @@ namespace JSPool.Tests
 			engine.Dispose();
 
 			innerEngine.Verify(x => x.Dispose());
-			Assert.That(() => engine.IsThreadAlive, Is.False.After(250, 5));
+			Thread.Sleep(50);
+			Assert.False(engine.IsThreadAlive);
 		}
 	}
 }

@@ -8,9 +8,9 @@ function Assert-LastExitCode {
 # Use date in version number
 $env:DNX_BUILD_VERSION = Get-Date -format yyyyMMdd-HHmm
 
-dotnet restore; Assert-LastExitCode
+dotnet restore src\JSPool.sln; Assert-LastExitCode
 # JSPool.Example.Web is a "legacy" csproj project, so NuGet packages need to be restored the old way too
 nuget restore src\JSPool.sln; Assert-LastExitCode
-& "${Env:ProgramFiles(x86)}\MSBuild\14.0\Bin\MSBuild.exe" src\JSPool.sln /t:rebuild /p:Configuration=Release; Assert-LastExitCode
-dotnet test tests\JSPool.Tests; Assert-LastExitCode
+& "${Env:ProgramFiles(x86)}\Microsoft Visual Studio\2017\Community\MSBuild\15.0\Bin\MSBuild.exe" src\JSPool.sln /t:rebuild /p:Configuration=Release; Assert-LastExitCode
+dotnet test tests\JSPool.Tests\JSPool.Tests.csproj; Assert-LastExitCode
 dotnet pack src\JSPool -c Release --version-suffix "$env:DNX_BUILD_VERSION"; Assert-LastExitCode

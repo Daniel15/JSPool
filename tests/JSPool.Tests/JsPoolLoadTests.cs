@@ -9,14 +9,13 @@ using System.Collections.Generic;
 using System.Threading;
 using JavaScriptEngineSwitcher.Core;
 using Moq;
-using NUnit.Framework;
+using Xunit;
 
 namespace JSPool.Tests
 {
-	[TestFixture]
 	public class JsPoolLoadTests
 	{
-		[Test]
+		[Fact]
 		public void ConcurrentGetAndReleaseEnginesIsSafe()
 		{
 			const int ConcurrentThreadCount = 100;
@@ -56,7 +55,7 @@ namespace JSPool.Tests
 				thread.Join();
 			}
 
-			Assert.AreEqual(0, pool.EngineCount);
+			Assert.Equal(0, pool.EngineCount);
 		}
 	}
 }

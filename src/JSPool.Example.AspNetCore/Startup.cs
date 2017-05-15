@@ -65,7 +65,6 @@ namespace JSPool.Example.AspNetCore
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
-                app.UseBrowserLink();
             }
             else
             {
