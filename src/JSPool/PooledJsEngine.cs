@@ -39,7 +39,7 @@ namespace JSPool
 		/// </summary>
 		/// <param name="expression">JS-expression</param>
 		/// <returns>Result of the expression</returns>
-		public object Evaluate(string expression)
+		public virtual object Evaluate(string expression)
 		{
 			return InnerEngine.Evaluate(expression);
 		}
@@ -50,7 +50,7 @@ namespace JSPool
 		/// <typeparam name="T">Type of result</typeparam>
 		/// <param name="expression">JS-expression</param>
 		/// <returns>Result of the expression</returns>
-		public T Evaluate<T>(string expression)
+		public virtual T Evaluate<T>(string expression)
 		{
 			return InnerEngine.Evaluate<T>(expression);
 		}
@@ -60,7 +60,7 @@ namespace JSPool
 		/// Executes a code
 		/// </summary>
 		/// <param name="code">Code</param>
-		public void Execute(string code)
+		public virtual void Execute(string code)
 		{
 			InnerEngine.Execute(code);
 		}
@@ -70,7 +70,7 @@ namespace JSPool
 		/// </summary>
 		/// <param name="path">Path to the JS-file</param>
 		/// <param name="encoding">Text encoding</param>
-		public void ExecuteFile(string path, Encoding encoding = null)
+		public virtual void ExecuteFile(string path, Encoding encoding = null)
 		{
 			InnerEngine.ExecuteFile(path, encoding);
 		}
@@ -80,7 +80,7 @@ namespace JSPool
 		/// </summary>
 		/// <param name="resourceName">JS-resource name</param>
 		/// <param name="type">Type from assembly that containing an embedded resource</param>
-		public void ExecuteResource(string resourceName, Type type)
+		public virtual void ExecuteResource(string resourceName, Type type)
 		{
 			InnerEngine.ExecuteResource(resourceName, type);
 		}
@@ -90,7 +90,7 @@ namespace JSPool
 		/// </summary>
 		/// <param name="resourceName">JS-resource name</param>
 		/// <param name="assembly">Assembly that containing an embedded resource</param>
-		public void ExecuteResource(string resourceName, Assembly assembly)
+		public virtual void ExecuteResource(string resourceName, Assembly assembly)
 		{
 			InnerEngine.ExecuteResource(resourceName, assembly);
 		}
@@ -101,7 +101,7 @@ namespace JSPool
 		/// <param name="functionName">Function name</param>
 		/// <param name="args">Function arguments</param>
 		/// <returns>Result of the function execution</returns>
-		public object CallFunction(string functionName, params object[] args)
+		public virtual object CallFunction(string functionName, params object[] args)
 		{
 			return InnerEngine.CallFunction(functionName, args);
 		}
@@ -113,7 +113,7 @@ namespace JSPool
 		/// <param name="functionName">Function name</param>
 		/// <param name="args">Function arguments</param>
 		/// <returns>Result of the function execution</returns>
-		public T CallFunction<T>(string functionName, params object[] args)
+		public virtual T CallFunction<T>(string functionName, params object[] args)
 		{
 			return InnerEngine.CallFunction<T>(functionName, args);
 		}
@@ -123,7 +123,7 @@ namespace JSPool
 		/// </summary>
 		/// <param name="variableName">Variable name</param>
 		/// <returns>Result of check (true - exists; false - not exists</returns>
-		public bool HasVariable(string variableName)
+		public virtual bool HasVariable(string variableName)
 		{
 			return InnerEngine.HasVariable(variableName);
 		}
@@ -133,7 +133,7 @@ namespace JSPool
 		/// </summary>
 		/// <param name="variableName">Variable name</param>
 		/// <returns>Value of variable</returns>
-		public object GetVariableValue(string variableName)
+		public virtual object GetVariableValue(string variableName)
 		{
 			return InnerEngine.GetVariableValue(variableName);
 		}
@@ -144,7 +144,7 @@ namespace JSPool
 		/// <typeparam name="T">Type of variable</typeparam>
 		/// <param name="variableName">Variable name</param>
 		/// <returns>Value of variable</returns>
-		public T GetVariableValue<T>(string variableName)
+		public virtual T GetVariableValue<T>(string variableName)
 		{
 			return InnerEngine.GetVariableValue<T>(variableName);
 		}
@@ -154,7 +154,7 @@ namespace JSPool
 		/// </summary>
 		/// <param name="variableName">Variable name</param>
 		/// <param name="value">Value of variable</param>
-		public void SetVariableValue(string variableName, object value)
+		public virtual void SetVariableValue(string variableName, object value)
 		{
 			InnerEngine.SetVariableValue(variableName, value);
 		}
@@ -163,7 +163,7 @@ namespace JSPool
 		/// Removes a variable
 		/// </summary>
 		/// <param name="variableName">Variable name</param>
-		public void RemoveVariable(string variableName)
+		public virtual void RemoveVariable(string variableName)
 		{
 			InnerEngine.RemoveVariable(variableName);
 		}
@@ -173,7 +173,7 @@ namespace JSPool
 		/// </summary>
 		/// <param name="itemName">Name of the item</param>
 		/// <param name="value">Value of the item</param>
-		public void EmbedHostObject(string itemName, object value)
+		public virtual void EmbedHostObject(string itemName, object value)
 		{
 			InnerEngine.EmbedHostObject(itemName, value);
 		}
@@ -183,7 +183,7 @@ namespace JSPool
 		/// </summary>
 		/// <param name="itemName">Name of the type</param>
 		/// <param name="type">The type</param>
-		public void EmbedHostType(string itemName, Type type)
+		public virtual void EmbedHostType(string itemName, Type type)
 		{
 			InnerEngine.EmbedHostType(itemName, type);
 		}
@@ -191,7 +191,7 @@ namespace JSPool
 		/// <summary>
 		/// Collects the garbage.
 		/// </summary>
-		public void CollectGarbage()
+		public virtual void CollectGarbage()
 		{
 			InnerEngine.CollectGarbage();
 		}
@@ -202,7 +202,7 @@ namespace JSPool
 		/// <param name="expression">JS-expression</param>
 		/// <param name="documentName">Document name</param>
 		/// <returns>Result of the expression</returns>
-		public object Evaluate(string expression, string documentName)
+		public virtual object Evaluate(string expression, string documentName)
 		{
 			return InnerEngine.Evaluate(expression, documentName);
 		}
@@ -214,7 +214,7 @@ namespace JSPool
 		/// <param name="expression">JS-expression</param>
 		/// <param name="documentName">Document name</param>
 		/// <returns>Result of the expression</returns>
-		public T Evaluate<T>(string expression, string documentName)
+		public virtual T Evaluate<T>(string expression, string documentName)
 		{
 			return InnerEngine.Evaluate<T>(expression, documentName);
 		}
@@ -224,7 +224,7 @@ namespace JSPool
 		/// </summary>
 		/// <param name="code">JS-code</param>
 		/// <param name="documentName">Document name</param>
-		public void Execute(string code, string documentName)
+		public virtual void Execute(string code, string documentName)
 		{
 			InnerEngine.Execute(code, documentName);
 		}

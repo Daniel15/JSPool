@@ -5,7 +5,8 @@
     
 See https://dan.cx/projects/jspool for usage instructions.</Description>
     <Copyright>Daniel Lo Nigro</Copyright>
-    <VersionPrefix>3.0.0</VersionPrefix>
+    <PackageIconUrl>https://stuff.dan.cx/images/projects/jspool-logo-256.png</PackageIconUrl>
+    <VersionPrefix>3.0.1</VersionPrefix>
     <TargetFrameworks>net40-client;net451;netstandard1.3</TargetFrameworks>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <AssemblyName>JSPool</AssemblyName>

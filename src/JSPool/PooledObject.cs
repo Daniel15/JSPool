@@ -29,7 +29,7 @@ namespace JSPool
 		/// <summary>
 		/// Returns this engine to the pool.
 		/// </summary>
-		public void Dispose()
+		public virtual void Dispose()
 		{
 			ReturnEngineToPool();
 		}
