@@ -47,14 +47,13 @@ var pool = new JsPool(new JsPoolConfig
   }
 });
 
-// Get an engine from the pool.
-var engine = pool.GetEngine();
-var message = engine.CallFunction<string>("sayHello", "Daniel");
-Console.WriteLine(message); // "Hello Daniel!"
-
-// Always release an engine when you're done with it. This adds the engine back
-// into the pool so it can be used again.
-pool.ReturnEngineToPool(engine);
+// Get an engine from the pool. The engine will be returned to the pool when
+// disposed. In this case, the using() block will automatically return the
+// engine to the pool when it falls out of scope.
+using (var engine = pool.GetEngine()) {
+  var message = engine.CallFunction<string>("sayHello", "Daniel");
+  Console.WriteLine(message); // "Hello Daniel!"
+}
 
 // Disposing the pool will also dispose all its engines. Always dispose the pool
 // when it is no longer required.
@@ -96,6 +95,35 @@ The following configuration settings are available for JSPool:
 
 Changelog
 =========
+3.0 - 1st July 2017
+-------------------
+ - [#7](https://github.com/Daniel15/JSPool/issues/7) - **Breaking API change**: Engines should now be returned to the pool by disposing them, rather than using `ReturnEngineToPool`:
+
+Old API:
+```csharp
+var engine = pool.GetEngine();
+engine.CallFunction("doStuff");
+pool.ReturnEngineToPool(engine);
+```
+
+New API:
+```csharp
+// with a "using" block
+using (var engine = pool.GetEngine()) {
+  engine.CallFunction("doStuff");
+}
+
+// without a "using" block
+var engine = pool.GetEngine();
+var message = engine.CallFunction("doStuff");
+engine.Dispose();
+```
+
+The old `ReturnEngineToPool` method still works, but it now takes an instance of `PooledJsEngine` rather than `IJsEngine`.
+
+ - [#20](https://github.com/Daniel15/JSPool/issues/20) - Remove `JsEngineWithOwnThread` as it's no longer needed in `MsieJsEngine` 2.1.0 and above
+ - Upgrade to latest JavaScriptEngineSwitcher
+
 2.0 - 25th September 2016
 --------------------------------
  - [#17](https://github.com/Daniel15/JSPool/issues/17) - Upgrade to JavaScriptEngineSwitcher 2.0
