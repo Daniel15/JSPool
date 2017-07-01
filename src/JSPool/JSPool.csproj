@@ -33,7 +33,7 @@ See https://dan.cx/projects/jspool for usage instructions.</Description>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="JavaScriptEngineSwitcher.Core" Version="2.2.0" />
+    <PackageReference Include="JavaScriptEngineSwitcher.Core" Version="2.4.9" />
   </ItemGroup>
 
 

@@ -195,6 +195,39 @@ namespace JSPool
 		{
 			InnerEngine.CollectGarbage();
 		}
+
+		/// <summary>
+		/// Evaluates an expression
+		/// </summary>
+		/// <param name="expression">JS-expression</param>
+		/// <param name="documentName">Document name</param>
+		/// <returns>Result of the expression</returns>
+		public object Evaluate(string expression, string documentName)
+		{
+			return InnerEngine.Evaluate(expression, documentName);
+		}
+
+		/// <summary>
+		/// Evaluates an expression
+		/// </summary>
+		/// <typeparam name="T">Type of result</typeparam>
+		/// <param name="expression">JS-expression</param>
+		/// <param name="documentName">Document name</param>
+		/// <returns>Result of the expression</returns>
+		public T Evaluate<T>(string expression, string documentName)
+		{
+			return InnerEngine.Evaluate<T>(expression, documentName);
+		}
+
+		/// <summary>
+		/// Executes a code
+		/// </summary>
+		/// <param name="code">JS-code</param>
+		/// <param name="documentName">Document name</param>
+		public void Execute(string code, string documentName)
+		{
+			InnerEngine.Execute(code, documentName);
+		}
 		#endregion
 	}
 }
