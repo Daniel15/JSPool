@@ -33,7 +33,7 @@ namespace JSPool
 		/// <summary>
 		/// Metadata for the engines. Total number of engines that have been created is reflected in its Count.
 		/// </summary>
-		protected readonly ConcurrentDictionary<TPooled, EngineMetadata> _metadata = new ConcurrentDictionary<TPooled, EngineMetadata>();
+		protected readonly IDictionary<TPooled, EngineMetadata> _metadata = new ConcurrentDictionary<TPooled, EngineMetadata>();
 		/// <summary>
 		/// Factory method used to create engines.
 		/// </summary>
@@ -179,8 +179,7 @@ namespace JSPool
 		/// <param name="engine"></param>
 		private TPooled TakeEngine(TPooled engine)
 		{
-		    var metadata = _metadata.GetOrAdd(engine, _ => new EngineMetadata());
-
+		    var metadata = ((ConcurrentDictionary<TPooled, EngineMetadata>)_metadata).GetOrAdd(engine, _ => new EngineMetadata());
             metadata.InUse = true;
 			metadata.UsageCount++;
 			return engine;
@@ -248,7 +247,7 @@ namespace JSPool
 			{
 				((IDisposable)engine.InnerEngine).Dispose();
 			}
-			_metadata.TryRemove(engine, out var _);
+			_metadata.Remove(engine);
 
 			if (repopulateEngines)
 			{
