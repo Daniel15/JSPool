@@ -19,7 +19,7 @@ namespace JSPool
 		/// </summary>
 		public JsPoolConfig()
 		{
-			EngineFactory = JsEngineSwitcher.Instance.CreateDefaultEngine;
+			EngineFactory = JsEngineSwitcher.Current.CreateDefaultEngine;
 		}
 	}
 }

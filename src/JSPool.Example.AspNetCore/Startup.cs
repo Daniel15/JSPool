@@ -7,7 +7,7 @@
 
 using System.IO;
 using JavaScriptEngineSwitcher.ChakraCore;
-using JavaScriptEngineSwitcher.Core;
+using JavaScriptEngineSwitcher.Extensions.MsDependencyInjection;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
@@ -37,8 +37,11 @@ namespace JSPool.Example.AspNetCore
             services.AddMvc();
 
 			// Configure JavaScriptEngineSwitcher
-	        JsEngineSwitcher.Instance.EngineFactories.AddChakraCore();
-	        JsEngineSwitcher.Instance.DefaultEngineName = ChakraCoreJsEngine.EngineName;
+            services.AddJsEngineSwitcher(options =>
+                options.DefaultEngineName = ChakraCoreJsEngine.EngineName
+            )
+                .AddChakraCore()
+                ;
 
 			// Add JsPool to the dependency injection container
 	        services.AddSingleton<IJsPool>(provider => new JsPool(new JsPoolConfig

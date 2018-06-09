@@ -22,12 +22,13 @@ namespace JSPool.Example.ConsoleApp
 		{
 			// Configure JavaScriptEngineSwitcher. Generally V8 is preferred, however
 			// it's currently not supported on .NET Core.
+			IJsEngineSwitcher engineSwitcher = JsEngineSwitcher.Current;
 #if NETCOREAPP1_0
-			JsEngineSwitcher.Instance.EngineFactories.AddChakraCore();
-			JsEngineSwitcher.Instance.DefaultEngineName = ChakraCoreJsEngine.EngineName;
+			engineSwitcher.EngineFactories.AddChakraCore();
+			engineSwitcher.DefaultEngineName = ChakraCoreJsEngine.EngineName;
 #else
-			JsEngineSwitcher.Instance.EngineFactories.AddV8();
-			JsEngineSwitcher.Instance.DefaultEngineName = V8JsEngine.EngineName;
+			engineSwitcher.EngineFactories.AddV8();
+			engineSwitcher.DefaultEngineName = V8JsEngine.EngineName;
 #endif
 
 			var pool = new JsPool(new JsPoolConfig

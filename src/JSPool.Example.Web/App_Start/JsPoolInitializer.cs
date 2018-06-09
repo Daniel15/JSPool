@@ -16,8 +16,9 @@ namespace JSPool.Example.Web
 		public static void Initialize()
 		{
 			// Configure JavaScriptEngineSwitcher
-			JsEngineSwitcher.Instance.EngineFactories.AddV8();
-			JsEngineSwitcher.Instance.DefaultEngineName = V8JsEngine.EngineName;
+			IJsEngineSwitcher engineSwitcher = JsEngineSwitcher.Current;
+			engineSwitcher.EngineFactories.AddV8();
+			engineSwitcher.DefaultEngineName = V8JsEngine.EngineName;
 
 			// Ideally this would use an IoC container, but I'm just using HttpApplicationState
 			// to keep the example simple.
