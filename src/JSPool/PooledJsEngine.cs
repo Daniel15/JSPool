@@ -20,24 +20,89 @@ namespace JSPool
 	{
 		#region IJsEngine implementation
 		/// <summary>
-		/// Gets the name of this JavaScript engine
+		/// Gets the name of this JS engine
 		/// </summary>
 		public string Name => InnerEngine.Name;
 
 		/// <summary>
-		/// Gets the version of this JavaScript engine
+		/// Gets the version of this JS engine
 		/// </summary>
 		public string Version => InnerEngine.Version;
 
 		/// <summary>
-		/// Determines if this engine supports garbage collection.
+		/// Determines if this engine supports script pre-compilation
+		/// </summary>
+		public bool SupportsScriptPrecompilation => InnerEngine.SupportsScriptPrecompilation;
+
+		/// <summary>
+		/// Determines if this engine supports script interruption
+		/// </summary>
+		public bool SupportsScriptInterruption => InnerEngine.SupportsScriptInterruption;
+
+		/// <summary>
+		/// Determines if this engine supports garbage collection
 		/// </summary>
 		public bool SupportsGarbageCollection => InnerEngine.SupportsGarbageCollection;
 
 		/// <summary>
+		/// Creates a pre-compiled script from JS code
+		/// </summary>
+		/// <param name="code">JS code</param>
+		/// <returns>A pre-compiled script that can be executed by different instances of JS engine</returns>
+		public virtual IPrecompiledScript Precompile(string code)
+		{
+			return InnerEngine.Precompile(code);
+		}
+
+		/// <summary>
+		/// Creates a pre-compiled script from JS code
+		/// </summary>
+		/// <param name="code">JS code</param>
+		/// <param name="documentName">Document name</param>
+		/// <returns>A pre-compiled script that can be executed by different instances of JS engine</returns>
+		public virtual IPrecompiledScript Precompile(string code, string documentName)
+		{
+			return InnerEngine.Precompile(code, documentName);
+		}
+
+		/// <summary>
+		/// Creates a pre-compiled script from JS file
+		/// </summary>
+		/// <param name="path">Path to the JS file</param>
+		/// <param name="encoding">Text encoding</param>
+		/// <returns>A pre-compiled script that can be executed by different instances of JS engine</returns>
+		public virtual IPrecompiledScript PrecompileFile(string path, Encoding encoding = null)
+		{
+			return InnerEngine.PrecompileFile(path, encoding);
+		}
+
+		/// <summary>
+		/// Creates a pre-compiled script from embedded JS resource
+		/// </summary>
+		/// <param name="resourceName">The case-sensitive resource name without the namespace of the specified type</param>
+		/// <param name="type">The type, that determines the assembly and whose namespace is used to scope
+		/// the resource name</param>
+		/// <returns>A pre-compiled script that can be executed by different instances of JS engine</returns>
+		public virtual IPrecompiledScript PrecompileResource(string resourceName, Type type)
+		{
+			return InnerEngine.PrecompileResource(resourceName, type);
+		}
+
+		/// <summary>
+		/// Creates a pre-compiled script from embedded JS resource
+		/// </summary>
+		/// <param name="resourceName">The case-sensitive resource name</param>
+		/// <param name="assembly">The assembly, which contains the embedded resource</param>
+		/// <returns>A pre-compiled script that can be executed by different instances of JS engine</returns>
+		public virtual IPrecompiledScript PrecompileResource(string resourceName, Assembly assembly)
+		{
+			return InnerEngine.PrecompileResource(resourceName, assembly);
+		}
+
+		/// <summary>
 		/// Evaluates an expression
 		/// </summary>
-		/// <param name="expression">JS-expression</param>
+		/// <param name="expression">JS expression</param>
 		/// <returns>Result of the expression</returns>
 		public virtual object Evaluate(string expression)
 		{
@@ -47,28 +112,70 @@ namespace JSPool
 		/// <summary>
 		/// Evaluates an expression
 		/// </summary>
+		/// <param name="expression">JS expression</param>
+		/// <param name="documentName">Document name</param>
+		/// <returns>Result of the expression</returns>
+		public virtual object Evaluate(string expression, string documentName)
+		{
+			return InnerEngine.Evaluate(expression, documentName);
+		}
+
+		/// <summary>
+		/// Evaluates an expression
+		/// </summary>
 		/// <typeparam name="T">Type of result</typeparam>
-		/// <param name="expression">JS-expression</param>
+		/// <param name="expression">JS expression</param>
 		/// <returns>Result of the expression</returns>
 		public virtual T Evaluate<T>(string expression)
 		{
 			return InnerEngine.Evaluate<T>(expression);
 		}
 
+		/// <summary>
+		/// Evaluates an expression
+		/// </summary>
+		/// <typeparam name="T">Type of result</typeparam>
+		/// <param name="expression">JS expression</param>
+		/// <param name="documentName">Document name</param>
+		/// <returns>Result of the expression</returns>
+		public virtual T Evaluate<T>(string expression, string documentName)
+		{
+			return InnerEngine.Evaluate<T>(expression, documentName);
+		}
 
 		/// <summary>
 		/// Executes a code
 		/// </summary>
-		/// <param name="code">Code</param>
+		/// <param name="code">JS code</param>
 		public virtual void Execute(string code)
 		{
 			InnerEngine.Execute(code);
 		}
 
 		/// <summary>
-		/// Executes a code from JS-file
+		/// Executes a code
 		/// </summary>
-		/// <param name="path">Path to the JS-file</param>
+		/// <param name="code">JS code</param>
+		/// <param name="documentName">Document name</param>
+		public virtual void Execute(string code, string documentName)
+		{
+			InnerEngine.Execute(code, documentName);
+		}
+
+		/// <summary>
+		/// Executes a pre-compiled script
+		/// </summary>
+		/// <param name="precompiledScript">A pre-compiled script that can be executed by different
+		/// instances of JS engine</param>
+		public virtual void Execute(IPrecompiledScript precompiledScript)
+		{
+			InnerEngine.Execute(precompiledScript);
+		}
+
+		/// <summary>
+		/// Executes a code from JS file
+		/// </summary>
+		/// <param name="path">Path to the JS file</param>
 		/// <param name="encoding">Text encoding</param>
 		public virtual void ExecuteFile(string path, Encoding encoding = null)
 		{
@@ -76,20 +183,21 @@ namespace JSPool
 		}
 
 		/// <summary>
-		/// Executes a code from embedded JS-resource
+		/// Executes a code from embedded JS resource
 		/// </summary>
-		/// <param name="resourceName">JS-resource name</param>
-		/// <param name="type">Type from assembly that containing an embedded resource</param>
+		/// <param name="resourceName">The case-sensitive resource name without the namespace of the specified type</param>
+		/// <param name="type">The type, that determines the assembly and whose namespace is used to scope
+		/// the resource name</param>
 		public virtual void ExecuteResource(string resourceName, Type type)
 		{
 			InnerEngine.ExecuteResource(resourceName, type);
 		}
 
 		/// <summary>
-		/// Executes a code from embedded JS-resource
+		/// Executes a code from embedded JS resource
 		/// </summary>
-		/// <param name="resourceName">JS-resource name</param>
-		/// <param name="assembly">Assembly that containing an embedded resource</param>
+		/// <param name="resourceName">The case-sensitive resource name</param>
+		/// <param name="assembly">The assembly, which contains the embedded resource</param>
 		public virtual void ExecuteResource(string resourceName, Assembly assembly)
 		{
 			InnerEngine.ExecuteResource(resourceName, assembly);
@@ -169,64 +277,44 @@ namespace JSPool
 		}
 
 		/// <summary>
-		/// Embeds a .NET object in the JavaScript engine.
+		/// Embeds a .NET object in the JS engine
 		/// </summary>
 		/// <param name="itemName">Name of the item</param>
 		/// <param name="value">Value of the item</param>
+		/// <remarks>Allows to embed instances of simple classes (or structures) and delegates.</remarks>
 		public virtual void EmbedHostObject(string itemName, object value)
 		{
 			InnerEngine.EmbedHostObject(itemName, value);
 		}
 
 		/// <summary>
-		/// Embeds a .NET type in the JavaScript engine.
+		/// Embeds a .NET type in the JS engine
 		/// </summary>
 		/// <param name="itemName">Name of the type</param>
 		/// <param name="type">The type</param>
+		/// <remarks>
+		/// .NET types are exposed to script code in the form of objects whose properties and
+		/// methods are bound to the type's static members.
+		/// </remarks>
 		public virtual void EmbedHostType(string itemName, Type type)
 		{
 			InnerEngine.EmbedHostType(itemName, type);
 		}
 
 		/// <summary>
-		/// Collects the garbage.
+		/// Interrupts script execution and causes the JS engine to throw an exception
+		/// </summary>
+		public virtual void Interrupt()
+		{
+			InnerEngine.Interrupt();
+		}
+
+		/// <summary>
+		/// Collects the garbage
 		/// </summary>
 		public virtual void CollectGarbage()
 		{
 			InnerEngine.CollectGarbage();
-		}
-
-		/// <summary>
-		/// Evaluates an expression
-		/// </summary>
-		/// <param name="expression">JS-expression</param>
-		/// <param name="documentName">Document name</param>
-		/// <returns>Result of the expression</returns>
-		public virtual object Evaluate(string expression, string documentName)
-		{
-			return InnerEngine.Evaluate(expression, documentName);
-		}
-
-		/// <summary>
-		/// Evaluates an expression
-		/// </summary>
-		/// <typeparam name="T">Type of result</typeparam>
-		/// <param name="expression">JS-expression</param>
-		/// <param name="documentName">Document name</param>
-		/// <returns>Result of the expression</returns>
-		public virtual T Evaluate<T>(string expression, string documentName)
-		{
-			return InnerEngine.Evaluate<T>(expression, documentName);
-		}
-
-		/// <summary>
-		/// Executes a code
-		/// </summary>
-		/// <param name="code">JS-code</param>
-		/// <param name="documentName">Document name</param>
-		public virtual void Execute(string code, string documentName)
-		{
-			InnerEngine.Execute(code, documentName);
 		}
 		#endregion
 	}
