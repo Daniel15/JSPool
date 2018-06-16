@@ -8,7 +8,7 @@
 using System;
 using JavaScriptEngineSwitcher.Core;
 
-#if NETCOREAPP1_0
+#if NETCOREAPP1_0 || NETCOREAPP2_0
 using JavaScriptEngineSwitcher.ChakraCore;
 #else
 using JavaScriptEngineSwitcher.V8;
@@ -23,7 +23,7 @@ namespace JSPool.Example.ConsoleApp
 			// Configure JavaScriptEngineSwitcher. Generally V8 is preferred, however
 			// it's currently not supported on .NET Core.
 			IJsEngineSwitcher engineSwitcher = JsEngineSwitcher.Current;
-#if NETCOREAPP1_0
+#if NETCOREAPP1_0 || NETCOREAPP2_0
 			engineSwitcher.EngineFactories.AddChakraCore();
 			engineSwitcher.DefaultEngineName = ChakraCoreJsEngine.EngineName;
 #else
