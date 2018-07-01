@@ -95,6 +95,16 @@ The following configuration settings are available for JSPool:
 
 Changelog
 =========
+4.0-beta1 - 30th June 2018
+--------------------------
+JavaScriptEngineSwitcher has been [upgraded](https://github.com/Daniel15/JSPool/pull/29) to version 3.0.0 beta. Upgrade instructions can be found in the [How to upgrade applications to version 3.X](https://github.com/Taritsyn/JavaScriptEngineSwitcher/wiki/How-to-upgrade-applications-to-version-3.X) document. 
+
+Other changes:
+ - [#30](https://github.com/Daniel15/JSPool/pull/30) - Added `net471` and `netstandard2.0` targets
+ - [#32](https://github.com/Daniel15/JSPool/pull/32) - Downgraded `net451` target to `net45`
+ 
+ All changes in this release were contributed by [Andrey Taritsyn](https://github.com/Taritsyn). Thanks for your contributions!
+
 3.0 - 1st July 2017
 -------------------
  - [#7](https://github.com/Daniel15/JSPool/issues/7) - **Breaking API change**: Engines should now be returned to the pool by disposing them, rather than using `ReturnEngineToPool`:
