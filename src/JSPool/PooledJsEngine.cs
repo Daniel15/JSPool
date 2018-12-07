@@ -22,27 +22,27 @@ namespace JSPool
 		/// <summary>
 		/// Gets the name of this JS engine
 		/// </summary>
-		public string Name => InnerEngine.Name;
+		public virtual string Name => InnerEngine.Name;
 
 		/// <summary>
 		/// Gets the version of this JS engine
 		/// </summary>
-		public string Version => InnerEngine.Version;
+		public virtual string Version => InnerEngine.Version;
 
 		/// <summary>
 		/// Determines if this engine supports script pre-compilation
 		/// </summary>
-		public bool SupportsScriptPrecompilation => InnerEngine.SupportsScriptPrecompilation;
+		public virtual bool SupportsScriptPrecompilation => InnerEngine.SupportsScriptPrecompilation;
 
 		/// <summary>
 		/// Determines if this engine supports script interruption
 		/// </summary>
-		public bool SupportsScriptInterruption => InnerEngine.SupportsScriptInterruption;
+		public virtual bool SupportsScriptInterruption => InnerEngine.SupportsScriptInterruption;
 
 		/// <summary>
 		/// Determines if this engine supports garbage collection
 		/// </summary>
-		public bool SupportsGarbageCollection => InnerEngine.SupportsGarbageCollection;
+		public virtual bool SupportsGarbageCollection => InnerEngine.SupportsGarbageCollection;
 
 		/// <summary>
 		/// Creates a pre-compiled script from JS code
