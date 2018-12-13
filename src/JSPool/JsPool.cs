@@ -30,10 +30,10 @@ namespace JSPool
 		/// </summary>
 		protected readonly BlockingCollection<TPooled> _availableEngines = new BlockingCollection<TPooled>();
 		/// <summary>
-		/// <summary>
 		/// Registered engines (ment to be used as a concurrent hash set)
-		protected readonly ConcurrentDictionary<TPooled, byte> _registeredEngines = new ConcurrentDictionary<TPooled, byte>();
 		/// </summary>
+		protected readonly ConcurrentDictionary<TPooled, byte> _registeredEngines = new ConcurrentDictionary<TPooled, byte>();
+		/// <summary>
 		/// Factory method used to create engines.
 		/// </summary>
 		protected readonly Func<TOriginal> _engineFactory;
