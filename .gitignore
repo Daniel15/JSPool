@@ -185,7 +185,3 @@ UpgradeLog*.htm
 
 # Microsoft Fakes
 FakesAssemblies/
-/src/.vs/JSPool/v15/Server/sqlite3/storage.ide-wal
-/src/.vs/JSPool/v15/Server/sqlite3/storage.ide-shm
-/src/.vs/JSPool/v15/Server/sqlite3/storage.ide
-/src/.vs/JSPool/v15/Server/sqlite3/db.lock
