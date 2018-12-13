@@ -13,12 +13,12 @@ using System.Threading;
 
 namespace JSPool
 {
-    /// <summary>
-    /// Handles acquiring JavaScript engines from a shared pool. This class is thread-safe.
-    /// </summary>
-    /// <typeparam name="TOriginal">Type of class contained within the pool</typeparam>
-    /// /// <typeparam name="TPooled">Type of <see cref="PooledObject{T}"/> that wraps the <typeparamref name="TOriginal"/></typeparam>
-    [DebuggerDisplay("{DebuggerDisplay,nq}")]
+	/// <summary>
+	/// Handles acquiring JavaScript engines from a shared pool. This class is thread-safe.
+	/// </summary>
+	/// <typeparam name="TOriginal">Type of class contained within the pool</typeparam>
+	/// /// <typeparam name="TPooled">Type of <see cref="PooledObject{T}"/> that wraps the <typeparamref name="TOriginal"/></typeparam>
+	[DebuggerDisplay("{DebuggerDisplay,nq}")]
 	public class JsPool<TPooled, TOriginal> : IJsPool<TPooled> where TPooled : PooledObject<TOriginal>, new()
 	{
 		/// <summary>
@@ -30,10 +30,10 @@ namespace JSPool
 		/// </summary>
 		protected readonly BlockingCollection<TPooled> _availableEngines = new BlockingCollection<TPooled>();
 		/// <summary>
-        /// <summary>
-        /// Registered engines (ment to be used as a concurrent hash set)
-        protected readonly ConcurrentDictionary<TPooled, byte> _registeredEngines = new ConcurrentDictionary<TPooled, byte>();
-        /// </summary>
+		/// <summary>
+		/// Registered engines (ment to be used as a concurrent hash set)
+		protected readonly ConcurrentDictionary<TPooled, byte> _registeredEngines = new ConcurrentDictionary<TPooled, byte>();
+		/// </summary>
 		/// Factory method used to create engines.
 		/// </summary>
 		protected readonly Func<TOriginal> _engineFactory;
@@ -119,7 +119,7 @@ namespace JSPool
 			};
 			engine.ReturnEngineToPool = () => ReturnEngineToPoolInternal(engine);
 			_config.Initializer(engine.InnerEngine);
-            _registeredEngines.TryAdd(engine, 0);
+			_registeredEngines.TryAdd(engine, 0);
 			return engine;
 		}
 
@@ -178,7 +178,7 @@ namespace JSPool
 		/// <param name="engine"></param>
 		protected virtual TPooled TakeEngine(TPooled engine)
 		{
-            engine.IncreaseUsageCount();
+			engine.IncreaseUsageCount();
 			return engine;
 		}
 
@@ -262,9 +262,9 @@ namespace JSPool
 			{
 				DisposeEngine(engine, repopulateEngines: false);
 			}
-            // Also clear out all metadata so engines that are currently in use while this disposal is 
-            // happening get disposed on return.
-            _registeredEngines.Clear();
+			// Also clear out all metadata so engines that are currently in use while this disposal is 
+			// happening get disposed on return.
+			_registeredEngines.Clear();
 		}
 
 		/// <summary>
