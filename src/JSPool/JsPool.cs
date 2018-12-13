@@ -5,21 +5,20 @@
  * LICENSE file in the root directory of this source tree. 
  */
 
+using JSPool.Exceptions;
 using System;
 using System.Collections.Concurrent;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.Threading;
-using JSPool.Exceptions;
 
 namespace JSPool
 {
-	/// <summary>
-	/// Handles acquiring JavaScript engines from a shared pool. This class is thread-safe.
-	/// </summary>
-	/// <typeparam name="TOriginal">Type of class contained within the pool</typeparam>
-	/// /// <typeparam name="TPooled">Type of <see cref="PooledObject{T}"/> that wraps the <typeparamref name="TOriginal"/></typeparam>
-	[DebuggerDisplay("{DebuggerDisplay,nq}")]
+    /// <summary>
+    /// Handles acquiring JavaScript engines from a shared pool. This class is thread-safe.
+    /// </summary>
+    /// <typeparam name="TOriginal">Type of class contained within the pool</typeparam>
+    /// /// <typeparam name="TPooled">Type of <see cref="PooledObject{T}"/> that wraps the <typeparamref name="TOriginal"/></typeparam>
+    [DebuggerDisplay("{DebuggerDisplay,nq}")]
 	public class JsPool<TPooled, TOriginal> : IJsPool<TPooled> where TPooled : PooledObject<TOriginal>, new()
 	{
 		/// <summary>
@@ -31,10 +30,10 @@ namespace JSPool
 		/// </summary>
 		protected readonly BlockingCollection<TPooled> _availableEngines = new BlockingCollection<TPooled>();
 		/// <summary>
-		/// Metadata for the engines. Total number of engines that have been created is reflected in its Count.
-		/// </summary>
-		protected readonly IDictionary<TPooled, EngineMetadata> _metadata = new ConcurrentDictionary<TPooled, EngineMetadata>();
-		/// <summary>
+        /// <summary>
+        /// Registered engines (ment to be used as a concurrent hash set)
+        protected readonly ConcurrentDictionary<TPooled, byte> _registeredEngines = new ConcurrentDictionary<TPooled, byte>();
+        /// </summary>
 		/// Factory method used to create engines.
 		/// </summary>
 		protected readonly Func<TOriginal> _engineFactory;
@@ -120,7 +119,7 @@ namespace JSPool
 			};
 			engine.ReturnEngineToPool = () => ReturnEngineToPoolInternal(engine);
 			_config.Initializer(engine.InnerEngine);
-			_metadata[engine] = new EngineMetadata();
+            _registeredEngines.TryAdd(engine, 0);
 			return engine;
 		}
 
@@ -174,14 +173,12 @@ namespace JSPool
 		}
 
 		/// <summary>
-		/// Marks the specified engine as "in use"
+		/// Increases the engine's usage count
 		/// </summary>
 		/// <param name="engine"></param>
-		private TPooled TakeEngine(TPooled engine)
+		protected virtual TPooled TakeEngine(TPooled engine)
 		{
-			var metadata = _metadata[engine];
-			metadata.InUse = true;
-			metadata.UsageCount++;
+            engine.IncreaseUsageCount();
 			return engine;
 		}
 
@@ -201,8 +198,7 @@ namespace JSPool
 		/// <param name="engine">Engine to return</param>
 		protected virtual void ReturnEngineToPoolInternal(TPooled engine)
 		{
-			EngineMetadata metadata;
-			if (!_metadata.TryGetValue(engine, out metadata))
+			if (!_registeredEngines.ContainsKey(engine))
 			{
 				// This engine was from another pool. This could happen if a pool is recycled
 				// and replaced with a different one (like what ReactJS.NET does when any 
@@ -214,9 +210,7 @@ namespace JSPool
 				return;
 			}
 
-			metadata.InUse = false;
-			var usageCount = metadata.UsageCount;
-			if (_config.MaxUsagesPerEngine > 0 && usageCount >= _config.MaxUsagesPerEngine)
+			if (_config.MaxUsagesPerEngine > 0 && engine.UsageCount >= _config.MaxUsagesPerEngine)
 			{
 				// Engine has been reused the maximum number of times, recycle it.
 				DisposeEngine(engine);
@@ -225,7 +219,7 @@ namespace JSPool
 
 			if (
 				_config.GarbageCollectionInterval > 0 &&
-				metadata.UsageCount % _config.GarbageCollectionInterval == 0
+				engine.UsageCount % _config.GarbageCollectionInterval == 0
 			)
 			{
 				CollectGarbage(engine.InnerEngine);
@@ -247,7 +241,7 @@ namespace JSPool
 			{
 				((IDisposable)engine.InnerEngine).Dispose();
 			}
-			_metadata.Remove(engine);
+			_registeredEngines.TryRemove(engine, out _);
 
 			if (repopulateEngines)
 			{
@@ -268,9 +262,9 @@ namespace JSPool
 			{
 				DisposeEngine(engine, repopulateEngines: false);
 			}
-			// Also clear out all metadata so engines that are currently in use while this disposal is 
-			// happening get disposed on return.
-			_metadata.Clear();
+            // Also clear out all metadata so engines that are currently in use while this disposal is 
+            // happening get disposed on return.
+            _registeredEngines.Clear();
 		}
 
 		/// <summary>
@@ -308,7 +302,7 @@ namespace JSPool
 		/// Gets the total number of engines in this engine pool, including engines that are
 		/// currently busy.
 		/// </summary>
-		public virtual int EngineCount => _metadata.Count;
+		public virtual int EngineCount => _registeredEngines.Count;
 
 		/// <summary>
 		/// Gets the number of currently available engines in this engine pool.

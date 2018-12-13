@@ -8,7 +8,7 @@ namespace JSPool.Tests
     public class JsPoolRecycleTests
     {
         [Fact]
-        public void ConcurentJsPoolRecyclingSimulationShouldNotThrow()
+        public void ConcurrentJsPoolRecyclingSimulationShouldNotThrow()
         {
             var pool = GetEnginePool();
 
@@ -45,9 +45,7 @@ namespace JSPool.Tests
                 EngineFactory = factory.Object.EngineFactory,
             };
 
-            var pool = new JsPool(config);
-
-            return pool;
+            return new JsPool(config);
         }
     }
 }
