@@ -30,7 +30,8 @@ namespace JSPool
 		/// </summary>
 		protected readonly BlockingCollection<TPooled> _availableEngines = new BlockingCollection<TPooled>();
 		/// <summary>
-		/// Registered engines (ment to be used as a concurrent hash set)
+		/// Registered engines (ment to be used as a concurrent hash set).
+		/// Engines which are not in the set will get disposed when returned to the pool. 
 		/// </summary>
 		protected readonly ConcurrentDictionary<TPooled, byte> _registeredEngines = new ConcurrentDictionary<TPooled, byte>();
 		/// <summary>
@@ -262,8 +263,8 @@ namespace JSPool
 			{
 				DisposeEngine(engine, repopulateEngines: false);
 			}
-			// Also clear out all metadata so engines that are currently in use while this disposal is 
-			// happening get disposed on return.
+			// Also clear registered engines, so that engines which are currently in use will 
+			// get disposed on return.
 			_registeredEngines.Clear();
 		}
 
