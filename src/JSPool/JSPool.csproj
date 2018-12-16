@@ -7,7 +7,7 @@ See https://dan.cx/projects/jspool for usage instructions.</Description>
     <Copyright>Daniel Lo Nigro</Copyright>
     <PackageIconUrl>https://stuff.dan.cx/images/projects/jspool-logo-256.png</PackageIconUrl>
     <VersionPrefix>4.0.0-beta1</VersionPrefix>
-    <TargetFrameworks>net40-client;net45;net471;netstandard1.3;netstandard2.0</TargetFrameworks>
+    <TargetFrameworks>net40-client;net45;netstandard1.3;netstandard2.0</TargetFrameworks>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <AssemblyName>JSPool</AssemblyName>
     <AssemblyOriginatorKeyFile>../key.snk</AssemblyOriginatorKeyFile>
@@ -34,7 +34,7 @@ See https://dan.cx/projects/jspool for usage instructions.</Description>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="JavaScriptEngineSwitcher.Core" Version="3.0.0-beta4" />
+    <PackageReference Include="JavaScriptEngineSwitcher.Core" Version="3.0.0-rc2" />
   </ItemGroup>
 
 
