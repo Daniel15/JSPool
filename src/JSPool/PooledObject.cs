@@ -15,7 +15,7 @@ namespace JSPool
 	/// </summary>
 	/// <typeparam name="T"></typeparam>
 	public abstract class PooledObject<T> : IDisposable
-    {
+	{
 		/// <summary>
 		/// Engine being wrapped by this pool
 		/// </summary>
@@ -25,6 +25,19 @@ namespace JSPool
 		/// Callback for returning the engine to the pool
 		/// </summary>
 		internal Action ReturnEngineToPool { private get; set; }
+
+		/// <summary>
+		/// Increase engine usage count by one.
+		/// </summary>
+		internal void IncreaseUsageCount()
+		{
+			UsageCount++;
+		}
+
+		/// <summary>
+		/// Gets the number of times this engine has been used.
+		/// </summary>
+		public int UsageCount { get; private set; } = 0;
 
 		/// <summary>
 		/// Returns this engine to the pool.
