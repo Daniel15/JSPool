@@ -95,6 +95,12 @@ The following configuration settings are available for JSPool:
 
 Changelog
 =========
+4.0 - 4th January 2019
+----------------------
+ - Updated to JavaScriptEngineSwitcher 3.0. Upgrade instructions can be found in the [How to upgrade applications to version 3.X](https://github.com/Taritsyn/JavaScriptEngineSwitcher/wiki/How-to-upgrade-applications-to-version-3.X) document. 
+ - [#37](https://github.com/Daniel15/JSPool/pull/37) - Fix JsPool recycling problem in a concurrent environment. Thanks @benokit
+ - [#34](https://github.com/Daniel15/JSPool/pull/34) - Made properties of the `PooledJsEngine` class virtual, to ease unit testing. Thanks @Taritsyn
+
 4.0-beta1 - 30th June 2018
 --------------------------
 JavaScriptEngineSwitcher has been [upgraded](https://github.com/Daniel15/JSPool/pull/29) to version 3.0.0 beta. Upgrade instructions can be found in the [How to upgrade applications to version 3.X](https://github.com/Taritsyn/JavaScriptEngineSwitcher/wiki/How-to-upgrade-applications-to-version-3.X) document. 
